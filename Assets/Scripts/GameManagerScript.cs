@@ -37,6 +37,10 @@ public class GameManagerScript : NetworkBehaviour {
 
 	public int moveCount = 0;
 
+	public int turnCount;
+	private int turnsTotal;
+	public Text turnCountText;
+
 	[SyncVar]
 	public Color wedge1;
 	[SyncVar]
@@ -63,12 +67,14 @@ public class GameManagerScript : NetworkBehaviour {
 	public Image nextTurnImage;
 
 	public GameObject screenFade;
+	public GameObject loseScreen;
 
 
 	// Use this for initialization
 	void Start () {
 	
 		hitCount = 0;
+		turnsTotal = turnCount;
 
 		waitText = GameObject.FindGameObjectWithTag ("Wait Text");
 		waitText.SetActive (false);
@@ -98,19 +104,17 @@ public class GameManagerScript : NetworkBehaviour {
 
 
 		//playerTurnText.text = playerTurn.ToString ();
-		hitCountText.text = "Hits " + hitCount.ToString () + "/2";
-		keyCountText.text = "Keys " + keyCount.ToString () + "/4";
-		moveCountText.text = "Moves " + moveCount.ToString () + "/3";
+		hitCountText.text = "HITS " + hitCount.ToString () + "/2";
+		keyCountText.text = "KEYS " + keyCount.ToString () + "/4";
+		moveCountText.text = "MOVES " + moveCount.ToString () + "/3";
+		turnCountText.text = "TURNS " + turnCount.ToString () + "/" + turnsTotal;
+
 
 		if (gameManagerId != playerTurn) {
 			TurnOver ();
 		} else {
-		
 			waitText.SetActive (false);
-
 		}
-
-
 	
 	}
 
@@ -121,8 +125,6 @@ public class GameManagerScript : NetworkBehaviour {
 		}
 
 			player.GetComponent<GhostMovementScript> ().moveTurn = true;	
-
-
 	}
 
 	public void SignalClicked () {
@@ -138,8 +140,6 @@ public class GameManagerScript : NetworkBehaviour {
 			button.GetComponent<ButtonScript> ().buttonBool = true;
 		}
 	}
-
-
 
 	public void TurnOver () {
 
@@ -161,8 +161,6 @@ public class GameManagerScript : NetworkBehaviour {
 
 		}
 	}
-
-		
 
 	public void SendWheel() {
 
@@ -265,6 +263,8 @@ public class GameManagerScript : NetworkBehaviour {
 
 	public void TurnOnPlayerOne (){
 
+		LowerTurnCount (); 
+
 		if (gameManagerId != 1) {
 			return;
 		}
@@ -276,6 +276,8 @@ public class GameManagerScript : NetworkBehaviour {
 	}
 
 	public void TurnOnPlayerTwo (){
+
+		LowerTurnCount ();
 
 		if (gameManagerId != 2) {
 			return;
@@ -292,6 +294,23 @@ public class GameManagerScript : NetworkBehaviour {
 
 			player.GetComponent<GhostMovementScript> ().CmdSpawnPortals ();
 		}
+	}
+
+	void LowerTurnCount () {
+		
+		turnCount = turnCount - 1;
+		if (turnCount < 1) {
+		
+			loseScreen.SetActive (true);
+
+			if (screenFade.activeSelf == false) {
+			
+				screenFade.SetActive (true);
+			
+			}
+		
+		} 
+
 	}
 
 }

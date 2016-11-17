@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GhostMovementScript : NetworkBehaviour {
 
@@ -52,6 +53,8 @@ public class GhostMovementScript : NetworkBehaviour {
 	public GameObject signalCircle;
 	private GameObject winScreen;
 
+	private Vector3 lastPos;
+
 	int layer_mask;
 
 
@@ -91,6 +94,8 @@ public override void OnStartLocalPlayer()
 		layer_mask = LayerMask.GetMask("Tile");
 
 
+
+
 		if (playerCount == 1) {
 
 			gameObject.tag = "Player One";
@@ -122,7 +127,13 @@ public override void OnStartLocalPlayer()
 			gameManager.TurnOff ();
 			gameManager.moveCount = 0;
 			moveTurn = false;
-			CmdSpawnObjectsP2 ();
+
+			Scene currentScene = SceneManager.GetActiveScene ();
+			string sceneName = currentScene.name;
+
+			if (sceneName == "Ghost Prototype") {
+				CmdSpawnObjectsP2 ();
+			}
 
 		}
 
@@ -132,6 +143,8 @@ public override void OnStartLocalPlayer()
 		purple = new Color (.4f, .255f, .51f, 1.0f);
 		black = new Color (0.0f, 0.0f, 0.0f, 1.0f);
 		white = new Color (1.0f, 1.0f, 1.0f, 1.0f);
+
+		lastPos = transform.position;
 			
 	}
 	
@@ -161,7 +174,7 @@ public override void OnStartLocalPlayer()
 							float distance = Vector3.Distance (ghostPos, squarePos);
 
 						if (distance < 1.3f && distance > .5f) {
-							Debug.Log ("MOVING");
+							
 								moving = true;
 								movesLeft = movesLeft - 1;
 								gameManager.moveCount = movesLeft;
@@ -187,7 +200,8 @@ public override void OnStartLocalPlayer()
 						moving = false;
 						glowSquare.SetActive (false);
 						transform.position = squarePos;
-
+						lastPos = transform.position;
+						
 					if (moveCount > 2 && playerId == 1) {
 							//gameManager.TurnOver ();
 							//CmdSwitchToPlayerTwo ();
@@ -211,6 +225,43 @@ public override void OnStartLocalPlayer()
 				}
 			}
 		}
+
+	void OnTriggerEnter(Collider other) {
+		if (other.tag == "Wall") {
+			transform.position = lastPos;
+			moving = false;
+			moveCount = moveCount + 1;
+			glowSquare.SetActive (false);
+
+			if (moveCount > 2 && playerId == 1) {
+				//gameManager.TurnOver ();
+				//CmdSwitchToPlayerTwo ();
+				movesLeft = 0;
+				gameManager.moveCount = movesLeft;
+				moveTurn = false;
+				moveCount = 0;
+				movesLeft = 3;
+
+			} else if (moveCount > 2 && playerId == 2) {
+				//gameManager.TurnOver ();
+				//CmdSwitchToPlayerOne ();
+				moveTurn = false;
+				moveCount = 0;
+				movesLeft = 0;
+				gameManager.moveCount = movesLeft;
+				movesLeft = 3;
+
+			}
+		}
+
+		if (other.name == "Ghost(Clone)") {
+
+			Color fullAColor = new Color (1.0f, 1.0f, 1.0f, 1.0f);
+			GameObject winScreen = GameObject.FindWithTag ("Win Screen");
+			winScreen.GetComponent<Image> ().color = fullAColor;
+		
+		}
+	}
 
 
 	public void SwitchPlayers (){
