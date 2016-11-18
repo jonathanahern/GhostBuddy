@@ -333,75 +333,75 @@ public override void OnStartLocalPlayer()
 	}
 		
 
-	[Command]
-	public void CmdUpdateColors () {
-		
-
-		GameManagerScript gameManagerScript = GameObject.Find ("Game Manager").GetComponent<GameManagerScript>();
-		gameManagerScript.wedge1 = wedge1;
-		gameManagerScript.wedge2 = wedge2;
-		gameManagerScript.wedge3 = wedge3;
-		gameManagerScript.UpdateColors ();
-
-	}
-
-	[ClientRpc]
-	void RpcUpdateColors () {
-	
-		if (gameManager == null) {
-
-			GameObject gameManagerObject = GameObject.Find ("Game Manager");
-			gameManager = gameManagerObject.GetComponent<GameManagerScript> ();
-
-		}
-
-		Debug.Log (playerId);
-		Debug.Log (wedge1);
-
-		gameManager.wedge1 = wedge1;
-		gameManager.wedge2 = wedge2;
-		gameManager.wedge3 = wedge3;
-
-	}
-		
-	public void UpdateWedgeOne() {
-
-		if (gameManager == null) {
-
-			GameObject gameManagerObject = GameObject.Find ("Game Manager");
-			gameManager = gameManagerObject.GetComponent<GameManagerScript> ();
-
-		}
-
-		gameManager.wedge1 = wedge1;
-
-	}
-
-	public void UpdateWedgeTwo() {
-
-		if (gameManager == null) {
-
-			GameObject gameManagerObject = GameObject.Find ("Game Manager");
-			gameManager = gameManagerObject.GetComponent<GameManagerScript> ();
-
-		}
-
-		gameManager.wedge2 = wedge2;
-
-	}
-
-	public void UpdateWedgeThree() {
-
-		if (gameManager == null) {
-
-			GameObject gameManagerObject = GameObject.Find ("Game Manager");
-			gameManager = gameManagerObject.GetComponent<GameManagerScript> ();
-
-		}
-
-		gameManager.wedge3 = wedge3;
-
-	}
+//	[Command]
+//	public void CmdUpdateColors () {
+//		
+//
+//		GameManagerScript gameManagerScript = GameObject.Find ("Game Manager").GetComponent<GameManagerScript>();
+//		gameManagerScript.wedge1 = wedge1;
+//		gameManagerScript.wedge2 = wedge2;
+//		gameManagerScript.wedge3 = wedge3;
+//		gameManagerScript.UpdateColors ();
+//
+//	}
+//
+//	[ClientRpc]
+//	void RpcUpdateColors () {
+//	
+//		if (gameManager == null) {
+//
+//			GameObject gameManagerObject = GameObject.Find ("Game Manager");
+//			gameManager = gameManagerObject.GetComponent<GameManagerScript> ();
+//
+//		}
+//
+//		Debug.Log (playerId);
+//		Debug.Log (wedge1);
+//
+//		gameManager.wedge1 = wedge1;
+//		gameManager.wedge2 = wedge2;
+//		gameManager.wedge3 = wedge3;
+//
+//	}
+//		
+//	public void UpdateWedgeOne() {
+//
+//		if (gameManager == null) {
+//
+//			GameObject gameManagerObject = GameObject.Find ("Game Manager");
+//			gameManager = gameManagerObject.GetComponent<GameManagerScript> ();
+//
+//		}
+//
+//		gameManager.wedge1 = wedge1;
+//
+//	}
+//
+//	public void UpdateWedgeTwo() {
+//
+//		if (gameManager == null) {
+//
+//			GameObject gameManagerObject = GameObject.Find ("Game Manager");
+//			gameManager = gameManagerObject.GetComponent<GameManagerScript> ();
+//
+//		}
+//
+//		gameManager.wedge2 = wedge2;
+//
+//	}
+//
+//	public void UpdateWedgeThree() {
+//
+//		if (gameManager == null) {
+//
+//			GameObject gameManagerObject = GameObject.Find ("Game Manager");
+//			gameManager = gameManagerObject.GetComponent<GameManagerScript> ();
+//
+//		}
+//
+//		gameManager.wedge3 = wedge3;
+//
+//	}
 
 	[Command]
 	public void CmdSendButton (){
@@ -436,8 +436,6 @@ public override void OnStartLocalPlayer()
 			wedgeWheel2.color = gameManagerFind.wedge2;
 			wedgeWheel3.color = gameManagerFind.wedge3;
 
-//			gameManager.TurnOn ();
-//			gameManager.moveCount = 3;
 		}
 
 		if (signalCircleOrig.tag == "Signal Wheel Two" && gameManagerFind.playerTurn == 1) {
@@ -449,8 +447,6 @@ public override void OnStartLocalPlayer()
 			wedgeWheel2.color = gameManagerFind.wedge2;
 			wedgeWheel3.color = gameManagerFind.wedge3;
 
-//			gameManager.TurnOn ();
-//			gameManager.moveCount = 3;
 		}
 
 		if (signalCircleOrig.tag == "Signal Wheel One" && gameManagerFind.playerTurn == 1) {
@@ -463,9 +459,6 @@ public override void OnStartLocalPlayer()
 			wheel2.color = white;
 			wheel3.color = white;
 
-//			signalCircleOrig.GetComponent<ColorButtonScript> ().EndTurnSignal ();
-//			gameManager.TurnOff ();
-//			gameManager.moveCount = 0;
 			gameManager.BackToWhite ();
 		
 		}
@@ -480,9 +473,6 @@ public override void OnStartLocalPlayer()
 			wheel2.color = white;
 			wheel3.color = white;
 
-//			signalCircleOrig.GetComponent<ColorButtonScript> ().EndTurnSignal ();
-//			gameManager.TurnOff ();
-//			gameManager.moveCount = 0;
 			gameManager.BackToWhite ();
 
 		}
@@ -540,7 +530,12 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeOnePink(){
-	
+		RpcWedgeOnePink ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeOnePink(){
+		
 		if (gameManager == null) {
 
 			GameObject gameManagerObject = GameObject.Find ("Game Manager");
@@ -554,7 +549,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeOneBlue(){
+		RpcWedgeOneBlue ();
+	}
 
+	[ClientRpc]
+	void RpcWedgeOneBlue(){
 		if (gameManager == null) {
 
 			GameObject gameManagerObject = GameObject.Find ("Game Manager");
@@ -568,6 +567,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeOneGreen(){
+		RpcWedgeOneGreen ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeOneGreen(){
 
 		if (gameManager == null) {
 
@@ -582,6 +586,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeOnePurple(){
+		RpcWedgeOnePurple ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeOnePurple(){
 
 		if (gameManager == null) {
 
@@ -596,6 +605,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeOneBlack(){
+		RpcWedgeOneBlack();
+	}
+
+	[ClientRpc]
+	void RpcWedgeOneBlack(){
 
 		if (gameManager == null) {
 
@@ -610,6 +624,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeOneWhite(){
+		RpcWedgeOneWhite ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeOneWhite(){
 
 		if (gameManager == null) {
 
@@ -624,6 +643,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeTwoPink(){
+		RpcWedgeTwoPink ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeTwoPink(){
 
 		if (gameManager == null) {
 
@@ -638,6 +662,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeTwoBlue(){
+		RpcWedgeTwoBlue ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeTwoBlue(){
 
 		if (gameManager == null) {
 
@@ -652,6 +681,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeTwoGreen(){
+		RpcWedgeTwoGreen ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeTwoGreen(){
 
 		if (gameManager == null) {
 
@@ -666,6 +700,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeTwoPurple(){
+		RpcWedgeTwoPurple ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeTwoPurple(){
 
 		if (gameManager == null) {
 
@@ -680,6 +719,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeTwoBlack(){
+		RpcWedgeTwoBlack ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeTwoBlack(){
 
 		if (gameManager == null) {
 
@@ -694,6 +738,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeTwoWhite(){
+		RpcWedgeTwoWhite ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeTwoWhite(){
 
 		if (gameManager == null) {
 
@@ -708,6 +757,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeThreePink(){
+		RpcWedgeThreePink ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeThreePink(){
 
 		if (gameManager == null) {
 
@@ -722,6 +776,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeThreeBlue(){
+		RpcWedgeThreeBlue ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeThreeBlue(){
 
 		if (gameManager == null) {
 
@@ -736,6 +795,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeThreeGreen(){
+		RpcWedgeThreeGreen ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeThreeGreen(){
 
 		if (gameManager == null) {
 
@@ -750,6 +814,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeThreePurple(){
+		RpcWedgeThreePurple ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeThreePurple(){
 
 		if (gameManager == null) {
 
@@ -764,6 +833,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeThreeBlack(){
+		RpcWedgeThreeBlack ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeThreeBlack(){
 
 		if (gameManager == null) {
 
@@ -778,6 +852,11 @@ public override void OnStartLocalPlayer()
 
 	[Command]
 	public void CmdWedgeThreeWhite(){
+		RpcWedgeThreeWhite ();
+	}
+
+	[ClientRpc]
+	void RpcWedgeThreeWhite(){
 
 		if (gameManager == null) {
 

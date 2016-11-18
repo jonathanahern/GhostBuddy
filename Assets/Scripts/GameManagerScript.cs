@@ -41,11 +41,11 @@ public class GameManagerScript : NetworkBehaviour {
 	private int turnsTotal;
 	public Text turnCountText;
 
-	[SyncVar]
+
 	public Color wedge1;
-	[SyncVar]
+
 	public Color wedge2;
-	[SyncVar]
+
 	public Color wedge3;
 
 	public int playerId;
@@ -170,7 +170,6 @@ public class GameManagerScript : NetworkBehaviour {
 				GameObject playerLocal = GameObject.FindGameObjectWithTag ("Player One");
 				playerLocal.GetComponent<GhostMovementScript> ().CmdSendButton ();
 				sendButton.SetActive (false);
-				
 			}
 		
 			if (gameManagerId == 2) {
