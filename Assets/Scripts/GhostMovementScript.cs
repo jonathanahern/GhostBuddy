@@ -56,7 +56,7 @@ public class GhostMovementScript : NetworkBehaviour {
 	private Vector3 lastPos;
 
 	int layer_mask;
-
+	GameObject[] windmills;
 
 public override void OnStartLocalPlayer()
 	{	
@@ -174,7 +174,6 @@ public override void OnStartLocalPlayer()
 							float distance = Vector3.Distance (ghostPos, squarePos);
 
 						if (distance < 1.3f && distance > .5f) {
-							
 								moving = true;
 								movesLeft = movesLeft - 1;
 								gameManager.moveCount = movesLeft;
@@ -201,6 +200,7 @@ public override void OnStartLocalPlayer()
 						glowSquare.SetActive (false);
 						transform.position = squarePos;
 						lastPos = transform.position;
+						CmdMovementTrigger();
 						
 					if (moveCount > 2 && playerId == 1) {
 							//gameManager.TurnOver ();
@@ -225,6 +225,26 @@ public override void OnStartLocalPlayer()
 				}
 			}
 		}
+
+	[Command]
+	public void CmdMovementTrigger () {
+	
+		RpcMovementTrigger ();
+	
+	}
+
+	[ClientRpc]
+	void RpcMovementTrigger () {
+		
+		if (windmills == null) {
+			windmills = GameObject.FindGameObjectsWithTag ("Windmill");
+		}
+		Debug.Log (windmills.Length);
+		foreach (GameObject windmill in windmills) {
+			windmill.GetComponent<WindmillScript>().RotateWindmill();
+		}
+
+	}
 
 	void OnTriggerEnter(Collider other) {
 		if (other.tag == "Wall") {
