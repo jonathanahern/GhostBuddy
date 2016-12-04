@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class TriggerScript : MonoBehaviour {
 
-	public bool forwardTrigger;
-	public bool rightTrigger;
-	public bool leftTrigger;
+	public bool forwardTriggerPink;
+	public bool rightTriggerPink;
+	public bool leftTriggerPink;
+	public bool forwardTriggerBlue;
+	public bool rightTriggerBlue;
+	public bool leftTriggerBlue;
 
 	private TurnManagerScript gameManager;
 
 	// Use this for initialization
 	void Start () {
-		gameManager = GameObject.FindGameObjectWithTag ("Game Manager").GetComponent<TurnManagerScript>();
+		gameManager = GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript>();
 		
 	}
 
@@ -24,43 +27,78 @@ public class TriggerScript : MonoBehaviour {
 
 	void TriggerAction () {
 	
-		if (forwardTrigger == true) {
+		if (forwardTriggerPink == true) {
 		
-			gameManager.ForwardGhost ();
+			gameManager.ForwardPink ();
 		
 		}
 
-		else if (rightTrigger == true) {
+		else if (rightTriggerPink == true) {
 
-			gameManager.RotateRightGhostOne ();
+			gameManager.RotateRightPink ();
 
 		}
 
-		else if (leftTrigger == true) {
+		else if (leftTriggerPink == true) {
 
-			gameManager.RotateLeftGhostOne ();
+			gameManager.RotateLeftPink ();
+
+		}
+
+		else if (forwardTriggerBlue == true) {
+
+			gameManager.ForwardBlue ();
+
+		}
+
+		else if (rightTriggerBlue == true) {
+
+			gameManager.RotateRightBlue ();
+
+		}
+
+		else if (leftTriggerBlue == true) {
+
+			gameManager.RotateLeftBlue ();
 
 		}
 	
 	}
 
-	public void TriggerSend () {
+	public void TriggerSend (int arrayOrder) {
 
-		if (forwardTrigger == true) {
+		if (forwardTriggerPink == true) {
 
-			gameManager.ghostOneList.Add (1);
-
-		}
-
-		else if (rightTrigger == true) {
-
-			gameManager.ghostOneList.Add (2);
+			gameManager.fromPinkGhost [arrayOrder] = 3;
 
 		}
 
-		else if (leftTrigger == true) {
+		else if (rightTriggerPink == true) {
 
-			gameManager.ghostOneList.Add (3);
+			gameManager.fromPinkGhost [arrayOrder] = 4;
+
+		}
+
+		else if (leftTriggerPink == true) {
+
+			gameManager.fromPinkGhost [arrayOrder] = 5;
+
+		}		
+		else if (forwardTriggerBlue == true) {
+
+			gameManager.fromBlueGhost [arrayOrder] = 0;
+
+		}
+
+		else if (rightTriggerBlue == true) {
+
+			gameManager.fromBlueGhost [arrayOrder] = 1;
+
+		}
+
+		else if (leftTriggerBlue == true) {
+
+			gameManager.fromBlueGhost [arrayOrder] = 2;
 
 		}
 
