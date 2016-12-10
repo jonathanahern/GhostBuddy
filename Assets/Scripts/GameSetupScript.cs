@@ -16,12 +16,15 @@ public class GameSetupScript : NetworkBehaviour {
 		string networkNum = netId.ToString();
 
 		eventSystem.SetActive (true);
-		if (networkNum == "1") {
 
+		if (networkNum == "1") {
+			
 			gameObject.name = "Pink Game Manager";
 			gameObject.tag = "Game Manager Local";
 			pink = new Color (1.0f, .8f, .808f, 1.0f);
 			ButtonsToPink ();
+			GameObject.FindGameObjectWithTag ("Camera One").SetActive (false);
+			GameObject.FindGameObjectWithTag ("Signal Circle Message").GetComponent<WheelFromBuddyScript> ().networkNum = 1;
 
 		}
 
@@ -31,6 +34,8 @@ public class GameSetupScript : NetworkBehaviour {
 			gameObject.tag = "Game Manager Local";
 			blue = new Color (.74f, .945f, 1.0f, 1.0f);
 			ButtonsToBlue ();
+			GameObject.FindGameObjectWithTag ("Camera Two").SetActive (false);
+			GameObject.FindGameObjectWithTag ("Signal Circle Message").GetComponent<WheelFromBuddyScript> ().networkNum = 2;
 
 		}
 	

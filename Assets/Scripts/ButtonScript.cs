@@ -3,13 +3,12 @@ using System.Collections;
 
 public class ButtonScript : MonoBehaviour {
 
-	private GameObject signalWheel;
-	public bool buttonBool = false;
+	public GameObject signalWheel;
+	private bool buttonBool = true;
 
 
 	void Start (){
 
-		signalWheel = GameObject.Find ("Signal Circle Original");
 
 	}
 

@@ -86,7 +86,7 @@ public override void OnStartLocalPlayer()
 		playerText = playerTurnText.GetComponent<Text> ();
 
 		signalCircle = GameObject.FindGameObjectWithTag ("Signal Wheel");
-		signalCircle.GetComponent <ColorButtonScript> ().player = gameObject;
+		//signalCircle.GetComponent <ColorButtonScript> ().player = gameObject;
 
 		GameObject cameraOne = GameObject.FindGameObjectWithTag ("Camera One");
 		GameObject cameraTwo = GameObject.FindGameObjectWithTag ("Camera Two");
@@ -888,6 +888,7 @@ public override void OnStartLocalPlayer()
 		gameManager.wedge3 = gameManager.white;
 
 	}
+
 	[Command]
 	void CmdSpawnObjectsP1 (){
 		GameObject firstKey = GameObject.Find ("First Key");

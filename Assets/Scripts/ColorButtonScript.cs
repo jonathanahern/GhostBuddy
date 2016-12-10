@@ -10,124 +10,99 @@ public class ColorButtonScript : MonoBehaviour {
 
 	public int tabCount = 0;
 
-	public GameObject player;
+	public int[] wedge = {95,95,95};
 
-	public GameObject gameManagerObject;
-
-	private bool foundPlayer = false;
+	public TurnManagerScript turnManager;
 
 
-	// Use this for initialization
 	void Start () {
+
 
 	}
 
-
+	//pink90,green91,purple92,blue93,black94,white95
 	public void TurnPink () {
-		if (foundPlayer == false) {
-		
-			FindPlayer ();
-
-		}
 
 		Color newColor = new Color (.99f, .56f, .556f, 1.0f);
 
 		if (tabCount == 0){
 			firstTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeOnePink ();
+			wedge[0] = 90;
 			return;
 		}
 
 		else if (tabCount == 1){
 			secondTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeTwoPink ();
+			wedge[1] = 90;
 			return;
 		}
 
 		else if (tabCount == 2){
 			thirdTab.color = newColor;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeThreePink ();
+			wedge[2] = 90;
 			tabCount = 0;
 			return;
 		}
 
 	}
-
+	//pink90,green91,purple92,blue93,black94,white95
 	public void TurnGreen () {
 
-		if (foundPlayer == false) {
-
-			FindPlayer ();
-
-		}
 
 		Color newColor = new Color (0.0f, .286f, .235f, 1.0f);
 
 		if (tabCount == 0){
 			firstTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeOneGreen ();
+			wedge[0] = 91;
 			return;
 		}
 
 		else if (tabCount == 1){
 			secondTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeTwoGreen ();
+			wedge[1] = 91;
 			return;
 		}
 
 		else if (tabCount == 2){
 			thirdTab.color = newColor;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeThreeGreen ();
+			wedge[2] = 91;
 			tabCount = 0;
 			return;
 		}
-	
 	}
-
+	//pink90,green91,purple92,blue93,black94,white95
 	public void TurnPurple (){
-
-		if (foundPlayer == false) {
-
-			FindPlayer ();
-
-		}
 
 		Color newColor = new Color (.4f, .255f, .51f, 1.0f);
 
 		if (tabCount == 0){
 			firstTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeOnePurple ();
+			wedge[0] = 92;
 			return;
 		}
 
 		else if (tabCount == 1){
 			secondTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeTwoPurple ();
+			wedge[1] = 92;
 			return;
 		}
 
 		else if (tabCount == 2){
 			thirdTab.color = newColor;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeThreePurple ();
+			wedge[2] = 92;
 			tabCount = 0;
 			return;
 		}
 	
 	}
-
+	//pink90,green91,purple92,blue93,black94,white95
 	public void TurnBlue (){
-
-		if (foundPlayer == false) {
-
-			FindPlayer ();
-
-		}
 
 		Color newColor = new Color (.09f, .31f, .447f, 1.0f);
 
@@ -135,139 +110,95 @@ public class ColorButtonScript : MonoBehaviour {
 		if (tabCount == 0){
 			firstTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeOneBlue ();
+			wedge[0] = 93;
 			return;
 		}
 
 		else if (tabCount == 1){
 			secondTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeTwoBlue ();
+			wedge[1] = 93;
 			return;
 		}
 
 		else if (tabCount == 2){
 			thirdTab.color = newColor;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeThreeBlue ();
+			wedge[2] = 93;
 			tabCount = 0;
 			return;
 		}
-	
-
 
 	}
-
+	//pink90,green91,purple92,blue93,black94,white95
 	public void TurnBlack (){
-
-		if (foundPlayer == false) {
-
-			FindPlayer ();
-
-		}
 
 		Color newColor = new Color (0.0f, 0.0f, 0.0f, 1.0f);
 
 		if (tabCount == 0){
 			firstTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeOneBlack ();
+			wedge[0] = 94;
 			return;
 		}
 
 		else if (tabCount == 1){
 			secondTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeTwoBlack ();
+			wedge[1] = 94;
 			return;
 		}
 
 		else if (tabCount == 2){
 			thirdTab.color = newColor;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeThreeBlack ();
+			wedge[2] = 94;
 			tabCount = 0;
 			return;
 		}
 	
 	}
-
-
+	//pink90,green91,purple92,blue93,black94,white95
 	public void TurnWhite (){
-
-		if (foundPlayer == false) {
-
-			FindPlayer ();
-
-		}
 
 		Color newColor = new Color (1.0f, 1.0f, 1.0f, 1.0f);
 
 		if (tabCount == 0){
 			firstTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeOneWhite ();
+			wedge[0] = 95;
 			return;
 		}
 
 		else if (tabCount == 1){
 			secondTab.color = newColor;
 			tabCount = tabCount + 1;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeTwoWhite ();
+			wedge[1] = 95;
 			return;
 		}
 
 		else if (tabCount == 2){
 			thirdTab.color = newColor;
-			player.GetComponent<GhostMovementScript> ().CmdWedgeThreeWhite ();
+			wedge[2] = 95;
 			tabCount = 0;
 			return;
 		}
-
+			
 	}
 
-	public void EndTurnSignal (){
-	
-		GameObject[] buttons = GameObject.FindGameObjectsWithTag("Button");
-		tabCount = 0;
-
-		foreach (GameObject button in buttons) {
-			button.GetComponent<ButtonScript> ().buttonBool = false;
-		}
-
-//		GameObject[] buttonHolders = GameObject.FindGameObjectsWithTag("Button Holder");
-
-//		foreach (GameObject buttonHolder in buttonHolders) {
-//			buttonHolder.GetComponent<ButtonHolderScript> ().Invoke ("MakeItTrue", 1.0f);
-//		}
-
-		player.GetComponent <GhostMovementScript> ().SwitchPlayers ();
-
-	}
-
-	void FindPlayer () {
-
-		if (gameManagerObject.tag == "Game Manager One") {
+	public void	BackToWhite(){
 		
-			player = GameObject.FindGameObjectWithTag ("Player One");
+		SendWheelToTurnManager ();
 
-		}
 
-		else if (gameManagerObject.tag == "Game Manager Two") {
-
-			player = GameObject.FindGameObjectWithTag ("Player Two");
-
-		}
+		Color newColor = new Color (1.0f, 1.0f, 1.0f, 1.0f);
+		firstTab.color = newColor;
+		secondTab.color = newColor;
+		thirdTab.color = newColor;
 
 	}
 
-	void TurnOffButtons () {
+	public void SendWheelToTurnManager () {
 
-		GameObject[] buttons = GameObject.FindGameObjectsWithTag("Button");
-		tabCount = 0;
-
-		foreach (GameObject button in buttons) {
-			button.GetComponent<ButtonScript> ().buttonBool = false;
-		}
-
+		turnManager.colorArray = wedge; 
+	
 	}
-
 }

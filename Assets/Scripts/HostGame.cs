@@ -11,10 +11,10 @@ public class HostGame : MonoBehaviour {
 
 	private NetworkManager networkManager;
 
-//	void Awake()
-//	{
-//		Screen.SetResolution(400,600,false);
-//	}
+	void Awake()
+	{
+		Screen.SetResolution(400,600,false);
+	}
 
 	void Start (){
 	

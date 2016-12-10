@@ -25,7 +25,7 @@ public class SignalWheelManager : MonoBehaviour {
 		buttons = GameObject.FindGameObjectsWithTag("Button");
 
 		foreach (GameObject button in buttons) {
-			button.GetComponent<ButtonScript> ().buttonBool = true;
+			//button.GetComponent<ButtonScript> ().buttonBool = true;
 		}
 
 	}

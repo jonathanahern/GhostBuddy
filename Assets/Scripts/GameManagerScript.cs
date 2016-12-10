@@ -57,7 +57,7 @@ public class GameManagerScript : NetworkBehaviour {
 
 	public int gameManagerId = 0;
 
-	private bool buttonBool;
+	//private bool buttonBool;
 
 	public GameObject[] buttons;
 	public GameObject sendButton;
@@ -137,7 +137,7 @@ public class GameManagerScript : NetworkBehaviour {
 		buttons = GameObject.FindGameObjectsWithTag("Button");
 
 		foreach (GameObject button in buttons) {
-			button.GetComponent<ButtonScript> ().buttonBool = true;
+		//	button.GetComponent<ButtonScript> ().buttonBool = true;
 		}
 	}
 
@@ -195,7 +195,7 @@ public class GameManagerScript : NetworkBehaviour {
 		
 				if (gameManagerId == playerTurn) {
 		
-					signalWheel.GetComponent<ColorButtonScript> ().EndTurnSignal ();
+					//signalWheel.GetComponent<ColorButtonScript> ().EndTurnSignal ();
 		
 				}
 	}
@@ -244,7 +244,7 @@ public class GameManagerScript : NetworkBehaviour {
 		sendButton.SetActive (true);
 		screenFade.SetActive (false);
 		foreach (GameObject button in buttons) {
-			button.GetComponent<ButtonScript> ().buttonBool = true;
+			//button.GetComponent<ButtonScript> ().buttonBool = true;
 		}
 
 	}
@@ -255,7 +255,7 @@ public class GameManagerScript : NetworkBehaviour {
 		buttons = GameObject.FindGameObjectsWithTag("Button");
 		nextTurnImage.sprite = sleepingGhost; 
 		foreach (GameObject button in buttons) {
-			button.GetComponent<ButtonScript> ().buttonBool = false;
+			//button.GetComponent<ButtonScript> ().buttonBool = false;
 		}
 	
 	}
