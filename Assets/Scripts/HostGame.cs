@@ -13,7 +13,7 @@ public class HostGame : MonoBehaviour {
 
 	void Awake()
 	{
-		Screen.SetResolution(400,600,false);
+		Screen.SetResolution(480,720,false);
 	}
 
 	void Start (){

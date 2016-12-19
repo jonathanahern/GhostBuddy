@@ -5,8 +5,9 @@ using UnityEngine;
 public class WheelPanelScript : MonoBehaviour {
 
 	public GameObject buttonPanel;
+	public GameObject wheelPanel;
 
-	private Vector3 screenPos;
+	private Vector3 onScreenPos;
 	private Vector3 offScreenPos;
 	private Vector3 currentPos;
 
@@ -16,9 +17,8 @@ public class WheelPanelScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		screenPos = buttonPanel.transform.position;
-		offScreenPos = new Vector3 (buttonPanel.transform.position.x, buttonPanel.transform.position.y - 100.0f, buttonPanel.transform.position.z);
-		
+		offScreenPos = buttonPanel.transform.position;
+		onScreenPos = wheelPanel.transform.position;
 	}
 	
 	// Update is called once per frame
@@ -29,12 +29,12 @@ public class WheelPanelScript : MonoBehaviour {
 				gameObject.transform.position.y,
 				gameObject.transform.position.z);
 
-			gameObject.transform.position = Vector3.Lerp (currentPos, screenPos, Time.deltaTime * 10);
+			gameObject.transform.position = Vector3.Lerp (currentPos, onScreenPos, Time.deltaTime * 10);
 
-			if (Vector3.Distance(currentPos,screenPos) < .05f) {
+			if (Vector3.Distance(currentPos,onScreenPos) < .05f) {
 
 				moveUp = false;
-				gameObject.transform.position = screenPos;
+				gameObject.transform.position = onScreenPos;
 			}
 		
 		}

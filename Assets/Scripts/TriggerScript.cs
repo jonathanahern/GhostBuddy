@@ -40,9 +40,7 @@ public class TriggerScript : MonoBehaviour {
 				TurnOffGlow ();
 
 			}
-		
 		}
-
 	}
 
 	public void InvokeTriggerAction (float seconds) {

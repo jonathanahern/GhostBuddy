@@ -10,14 +10,19 @@ public class GameSetupScript : NetworkBehaviour {
 	private Color pink;
 	private Color blue;
 
+	public GameObject doneButton;
+	public GameObject deleteButton;
+	public Image colorBarButtons;
+
 
 	public override void OnStartLocalPlayer(){
 	
-		string networkNum = netId.ToString();
+		int networkNum = (int)netId.Value;
+		//Debug.Log (networkNum);
 
 		eventSystem.SetActive (true);
 
-		if (networkNum == "1") {
+		if (networkNum == 1) {
 			
 			gameObject.name = "Pink Game Manager";
 			gameObject.tag = "Game Manager Local";
@@ -28,7 +33,7 @@ public class GameSetupScript : NetworkBehaviour {
 
 		}
 
-		if (networkNum == "2") {
+		if (networkNum == 2) {
 
 			gameObject.name = "Blue Game Manager";
 			gameObject.tag = "Game Manager Local";
@@ -98,6 +103,10 @@ public class GameSetupScript : NetworkBehaviour {
 
 		}
 
+		doneButton.GetComponent<Image>().color = pink;
+		deleteButton.GetComponent<Image>().color = pink;
+		colorBarButtons.color = pink;
+
 	}
 
 	void ButtonsToBlue () {
@@ -110,6 +119,10 @@ public class GameSetupScript : NetworkBehaviour {
 			buttons[i].GetComponent<Image>().color = blue;
 
 		}
+
+		doneButton.GetComponent<Image>().color = blue;
+		deleteButton.GetComponent<Image>().color = blue;
+		colorBarButtons.color = blue;
 
 	}
 

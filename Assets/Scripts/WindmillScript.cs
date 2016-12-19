@@ -97,7 +97,7 @@ public class WindmillScript : MonoBehaviour {
 				Vector3 newPos = new Vector3 (newXPos, ghostTwo.transform.position.y, newZPos);
 				ghostTwo.transform.position = newPos;
 
-				float roundedAngle = (Mathf.Round (ghostOne.transform.eulerAngles.y / 10)) * 10;
+				float roundedAngle = (Mathf.Round (ghostOne.transform.eulerAngles.y / 90)) * 90;
 				Vector3 newAngle = new Vector3 (ghostTwo.transform.eulerAngles.x, roundedAngle, ghostTwo.transform.eulerAngles.z);
 				ghostTwo.transform.eulerAngles = newAngle;
 			}
@@ -110,7 +110,7 @@ public class WindmillScript : MonoBehaviour {
 				Vector3 newPos = new Vector3 (newXPos, ghostTwo.transform.position.y, newZPos);
 				ghostTwo.transform.position = newPos;
 
-				float roundedAngle = (Mathf.Round (ghostTwo.transform.eulerAngles.y / 10)) * 10;
+				float roundedAngle = (Mathf.Round (ghostTwo.transform.eulerAngles.y / 90)) * 90;
 				Vector3 newAngle = new Vector3 (ghostTwo.transform.eulerAngles.x, roundedAngle, ghostTwo.transform.eulerAngles.z);
 				ghostTwo.transform.eulerAngles = newAngle;
 			}
@@ -135,51 +135,55 @@ public class WindmillScript : MonoBehaviour {
 
 	void RotateGhostOne () {
 
-		startAngle = ghostOne.transform.eulerAngles.y;
-		if (startAngle == 0 && direction == -1) {
-			startAngle = 360.0f;
-		}
-	
-		endAngle = startAngle + 90.0f * direction;
+		ghostOne.transform.parent = gameObject.transform;
 
-		if (endAngle == 0 && direction == -1) {
-		
-			endAngle = 3f;
-		
-		}
-
-		if (endAngle == 360 && direction == 1) {
-
-			endAngle = 357f;
-
-		}
-
-		rotateGhostOne = true;
+//		startAngle = ghostOne.transform.eulerAngles.y;
+//		if (startAngle == 0 && direction == -1) {
+//			startAngle = 360.0f;
+//		}
+//	
+//		endAngle = startAngle + 90.0f * direction;
+//
+//		if (endAngle == 0 && direction == -1) {
+//		
+//			endAngle = 3f;
+//		
+//		}
+//
+//		if (endAngle == 360 && direction == 1) {
+//
+//			endAngle = 357f;
+//
+//		}
+//
+//		rotateGhostOne = true;
 	
 	}
 
 	void RotateGhostTwo () {
 
-		startAngle2 = ghostTwo.transform.eulerAngles.y;
-		if (startAngle2 == 0 && direction == -1) {
-			startAngle2 = 360.0f;
-		}
+		ghostTwo.transform.parent = gameObject.transform;
 
-		endAngle2 = startAngle2 + 90.0f * direction;
-
-		if (endAngle2 == 0 && direction == -1) {
-
-			endAngle2 = 3f;
-
-		}
-
-		if (endAngle2 == 360 && direction == 1) {
-
-			endAngle2 = 357f;
-
-		}
-
-		rotateGhostTwo = true;
+//		startAngle2 = ghostTwo.transform.eulerAngles.y;
+//		if (startAngle2 == 0 && direction == -1) {
+//			startAngle2 = 360.0f;
+//		}
+//
+//		endAngle2 = startAngle2 + 90.0f * direction;
+//
+//		if (endAngle2 == 0 && direction == -1) {
+//
+//			endAngle2 = 3f;
+//
+//		}
+//
+//		if (endAngle2 == 360 && direction == 1) {
+//
+//			endAngle2 = 357f;
+//
+//		}
+//
+//		rotateGhostTwo = true;
 
 	}
 

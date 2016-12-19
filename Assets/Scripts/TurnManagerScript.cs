@@ -10,6 +10,8 @@ public class TurnManagerScript : NetworkBehaviour {
 	public GameObject pinkGhost;
 	public GameObject blueGhost;
 
+	public GameObject[] ghosts = new GameObject[2];
+
 	public bool winning;
 
 	private Vector3 pinkEndPos;
@@ -29,6 +31,14 @@ public class TurnManagerScript : NetworkBehaviour {
 	public Text turnsText;
 	public Image timerCircle;
 	float totalTurns;
+
+	public float iconsLeft = 10;
+	public float iconsToStart = 10;
+	public Image iconsLeftSquare;
+
+	bool wheelPhase = true;
+	public WheelPanelScript buttonPanel;
+	public WheelPanelScript wheelPanel;
 
 	public GameObject scrollList;
 
@@ -60,15 +70,16 @@ public class TurnManagerScript : NetworkBehaviour {
 	public GameObject loseScreen;
 	public GameObject winScreen;
 
-	public int[] fromPinkGhost = {0,0,0,0,0,0,0};
-	public int[] fromBlueGhost = {0,0,0,0,0,0,0};
+	public int[] fromPinkGhost = {0,0,0,0,0,0,0,0,0,0,0};
+	public int[] fromBlueGhost = {0,0,0,0,0,0,0,0,0,0,0};
 	public int[] fromPinkGhostColors = {0,0,0};
 	public int[] fromBlueGhostColors = {0,0,0};
 
-	public int[] colorArray = new int[3];
+	public int[] colorArray = {95,95,95};
 
-	public GameObject[] blueGhostIcon = new GameObject[7];
-	public GameObject[] pinkGhostIcon = new GameObject[7];
+
+	public GameObject[] blueGhostIcon = new GameObject[11];
+	public GameObject[] pinkGhostIcon = new GameObject[11];
 	private GameObject[] iconList = new GameObject[20];
 	public GameObject[] combinedIcons = new GameObject[14];
 
@@ -106,6 +117,14 @@ public class TurnManagerScript : NetworkBehaviour {
 		blueGhost = Instantiate(Resources.Load("Blue Ghost", typeof(GameObject))) as GameObject;
 		blueGhost.transform.position = playerTwoSpawn.transform.position;
 		blueGhost.transform.rotation = playerTwoSpawn.transform.rotation;
+
+		ghosts [0] = blueGhost;
+		ghosts [1] = pinkGhost;
+
+		for(int i = 0; i < colorArray.Length; i++)
+		{
+			colorArray[i] = 95;
+		}
 
 	}
 
@@ -200,12 +219,20 @@ public class TurnManagerScript : NetworkBehaviour {
 			GameObject newTrigger = Instantiate (wheelIconBlue, new Vector3 (0, 0, 0), Quaternion.identity);
 			newTrigger.transform.SetParent (scrollList.transform, false);
 		}
-		
+
+
 	
 	}
 
 	public void PlaceForwardGhost(){
+
+		if (iconsLeft < 1) {
+			return;
+		}
 	
+		iconsLeft--;
+		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
+
 		if (networkNum == "1") {
 	
 			GameObject newTrigger = Instantiate (forwardIconPink, new Vector3 (0, 0, 0), Quaternion.identity);
@@ -220,6 +247,13 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void PlaceRightIcon() {
+
+		if (iconsLeft < 1) {
+			return;
+		}
+
+		iconsLeft--;
+		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 
 		if (networkNum == "1") {
 
@@ -238,6 +272,13 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void PlaceLeftIcon() {
 
+		if (iconsLeft < 1) {
+			return;
+		}
+
+		iconsLeft--;
+		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
+
 		if (networkNum == "1") {
 
 			GameObject newTrigger = Instantiate (leftIconPink, new Vector3 (0, 0, 0), Quaternion.identity);
@@ -252,6 +293,13 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void PlaceNaptIcon() {
+
+		if (iconsLeft < 1) {
+			return;
+		}
+
+		iconsLeft--;
+		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 
 		if (networkNum == "1") {
 
@@ -268,52 +316,64 @@ public class TurnManagerScript : NetworkBehaviour {
 		
 
 	public void ForwardPink () {
+		
 
 		pinkStartPos = pinkGhost.transform.position;
 		pinkEndPos = pinkGhost.transform.position - pinkGhost.transform.forward;
 		forwardPinkGhost = true;
+		StraightenGhost ();
 
 	}
 
 	public void RotateRightPink () {
+		
 
 		direction = 1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
 		StartCoroutine(RotateObject(pinkGhost, rotation2, 1f));
+		StraightenGhost ();
 	}
 
 	public void RotateLeftPink () {
+		
 		
 		direction = -1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
 		StartCoroutine(RotateObject(pinkGhost, rotation2, 1f));
+		StraightenGhost ();
 
 	}
 
 	public void ForwardBlue () {
+		
 
 		blueStartPos = blueGhost.transform.position;
 		blueEndPos = blueGhost.transform.position - blueGhost.transform.forward;
 		forwardBlueGhost = true;
+		StraightenGhost ();
 
 	}
 
 	public void RotateRightBlue () {
+		
 
 		direction = 1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
 		StartCoroutine(RotateObject(blueGhost, rotation2, 1f));
+		StraightenGhost ();
 	}
 
 	public void RotateLeftBlue () {
+		
 
 		direction = -1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
 		StartCoroutine(RotateObject(blueGhost, rotation2, 1f));
+		StraightenGhost ();
 
 	}
 
@@ -365,7 +425,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			float seconds = 0;
 			for (int i = 0; i < triggerCount; i++) {
 				triggers [i].GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
-				seconds = seconds + 1.5f;
+				seconds = seconds + 1.9f;
 				if (i == (triggerCount - 1)) {
 					Invoke ("BackToOriginalPositionPink", seconds + 1);
 				}
@@ -380,7 +440,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			float seconds = 0;
 			for (int i = 0; i < triggerCount; i++) {
 				triggers [i].GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
-				seconds = seconds + 1.5f;
+				seconds = seconds + 1.9f;
 				if (i == (triggerCount - 1)) {
 					Invoke ("BackToOriginalPositionBlue", seconds + 1);
 				}
@@ -390,18 +450,28 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	void PlayCombinedIcons () {
-		
+
+		GameObject[] triggersPlusNull = GameObject.FindGameObjectsWithTag ("Trigger");
+
+		for (int i = 0; i < triggersPlusNull.Length; i++) {
+
+			if (triggersPlusNull [i].name == "NullObject(Clone)") {
+
+				Destroy (triggersPlusNull [i]);
+				}
+			}
+
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 		float seconds = 0;
+
 		for (int i = 0; i < triggers.Length; i++) {
-			seconds = seconds + 1.5f;
+			seconds = seconds + 1.9f;
 			scrollList.transform.GetChild(i).gameObject.GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
 			if (i == triggers.Length - 1) {
 			
 				Invoke ("BeginNewTurn", seconds + 2.0f);
 			
 			}
-
 		}
 	}
 
@@ -417,6 +487,12 @@ public class TurnManagerScript : NetworkBehaviour {
 	public void TurnDone () {
 
 		waitScreen.SetActive (true);
+
+		if (wheelPhase == false) {
+		
+			buttonPanel.MoveDown ();
+
+		}
 
 		placedIcons = true;
 		//Counts number of icons
@@ -454,7 +530,6 @@ public class TurnManagerScript : NetworkBehaviour {
 			
 				receivedIcons = true;
 
-			
 			}
 		}
 	}
@@ -475,8 +550,6 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 
-
-
 	void ReadyToSee () {
 		
 		readyToSeeSign.SetActive (true);
@@ -495,12 +568,10 @@ public class TurnManagerScript : NetworkBehaviour {
 					PlaceGearIcons ();
 					return;
 				} 
-			
 				GameObject newTrigger = Instantiate (blueGhostIcon [i], new Vector3 (0, 0, 0), Quaternion.identity);
 				newTrigger.transform.SetParent (scrollList.transform, false);
 				newTrigger.transform.SetSiblingIndex (i + sibDex);
 				sibDex++;
-
 			}
 		}
 
@@ -523,48 +594,159 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	void PlaceGearIcons () {
 
-		Debug.Log("gears!");
-		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
-		int gearCount = Mathf.CeilToInt((triggers.Length + 1)/2); //pb2pb5pb8pbpbp
+		if (wheelPhase == true) {
+		
+			PlayCombinedIcons ();
+		
+		} else {
 
-		int sibDex = 2;
-		for (int i = 0; i < gearCount; i++) {
+			int pinkTot = 0;
+			int blueTot = 0;
 
-			GameObject newGear = Instantiate (gearIcon, new Vector3 (0, 0, 0), Quaternion.identity);
-			newGear.transform.SetParent (scrollList.transform, false);
-			newGear.transform.SetSiblingIndex (i + sibDex);
-			sibDex = sibDex + 2;
-			if (i == gearCount - 1) {
+			for (int i = 0; i < fromBlueGhost.Length; i++) {
 
-				PlayCombinedIcons ();
-			
+				if (fromBlueGhost [i] > 0) {
+					blueTot++;
+				}
 			}
 
+			for (int i = 0; i < fromPinkGhost.Length; i++) {
+
+				if (fromPinkGhost [i] > 0) {
+					pinkTot++;
+				}
+			}
+				
+			int diff = blueTot - pinkTot;
+			Debug.Log (diff);
+
+			if (diff == 0) {
+				Debug.Log ("equal happened");
+				GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
+				int gearCount = Mathf.CeilToInt ((triggers.Length + 1) / 2); 
+
+				int sibDex = 2;
+
+				for (int i = 0; i < gearCount; i++) {
+
+					GameObject newGear = Instantiate (gearIcon, new Vector3 (0, 0, 0), Quaternion.identity);
+					newGear.transform.SetParent (scrollList.transform, false);
+					newGear.transform.SetSiblingIndex (i + sibDex);
+					sibDex = sibDex + 2;
+
+//					if (i == gearCount - 1) {
+//
+//						PlayCombinedIcons ();
+//
+//					}
+
+				}
+			}
+
+			//more blue than pink
+				if (diff > 0) {
+				
+				int sibDex = 2;
+
+				for (int i = 0; i < pinkTot; i++) {
+
+					GameObject newGear = Instantiate (gearIcon, new Vector3 (0, 0, 0), Quaternion.identity);
+					newGear.transform.SetParent (scrollList.transform, false);
+					newGear.transform.SetSiblingIndex (i + sibDex);
+					sibDex = sibDex + 2;
+
+				}
+
+				sibDex = sibDex - 1;
+
+				for (int i = pinkTot; i < blueTot; i++) {
+
+					GameObject newGear = Instantiate (gearIcon, new Vector3 (0, 0, 0), Quaternion.identity);
+					newGear.transform.SetParent (scrollList.transform, false);
+					newGear.transform.SetSiblingIndex (i + sibDex);
+					sibDex = sibDex + 1;
+
+
+
+				}
+
+			}
+
+			//more pink
+			if (diff < 0) {
+
+				int sibDex = 2;
+
+				for (int i = 0; i < blueTot; i++) {
+
+					GameObject newGear = Instantiate (gearIcon, new Vector3 (0, 0, 0), Quaternion.identity);
+					newGear.transform.SetParent (scrollList.transform, false);
+					newGear.transform.SetSiblingIndex (i + sibDex);
+					sibDex = sibDex + 2;
+
+				}
+
+				sibDex = sibDex - 1;
+
+				for (int i = blueTot; i < pinkTot; i++) {
+
+					GameObject newGear = Instantiate (gearIcon, new Vector3 (0, 0, 0), Quaternion.identity);
+					newGear.transform.SetParent (scrollList.transform, false);
+					newGear.transform.SetSiblingIndex (i + sibDex);
+					sibDex = sibDex + 1;
+
+				}
+			}
+
+			pinkTot = 0;
+			blueTot = 0;
+			PlayCombinedIcons ();
+
 		}
-			
 	}
 
 	void BeginNewTurn () {
-		Debug.Log ("winningbool: " + winning);
-		if (winning == true) {
-			winScreen.SetActive (true);
-		}
+		//Debug.Log ("winningbool: " + winning);
 
-		turnsLeft = turnsLeft - 1.0f;
-		timerCircle.fillAmount = (turnsLeft / totalTurns);
 
-		Debug.Log ("turnsLeft: " + turnsLeft + "totalTurns: " + totalTurns + " fillAmount " + (turnsLeft / totalTurns));
+		if (wheelPhase == true) {
+			wheelPhase = false;
+			if (turnsLeft > 0) {
+				buttonPanel.MoveUp ();
+			}
+			for(int i = 0; i < colorArray.Length; i++)
+			{
+				colorArray[i] = 95;
+			}
+				
+		} else {
 
-		if (turnsLeft == 0 && winning == false) {
+			iconsLeft = iconsToStart;
+			iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
+
+			turnsLeft = turnsLeft - 1.0f;
+			timerCircle.fillAmount = (turnsLeft / totalTurns);
 		
-			loseScreen.SetActive (true);
-		
-		}
+			wheelPhase = true;
+			if (turnsLeft > 0) {
+				wheelPanel.MoveUp ();
+			}
+			if (turnsLeft == 0 && winning == false) {
 
-		for(int i = 0; i < colorArray.Length; i++)
-		{
-			colorArray[i] = 95;
+				loseScreen.SetActive (true);
+
+			}
+
+			if (winning == true) {
+				winScreen.SetActive (true);
+			}
+
+
 		}
+			
+		ClearArray ();
+
+		//Debug.Log ("turnsLeft: " + turnsLeft + "totalTurns: " + totalTurns + " fillAmount " + (turnsLeft / totalTurns));
 
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 		int triggerCount = triggers.Length;
@@ -575,14 +757,22 @@ public class TurnManagerScript : NetworkBehaviour {
 		}
 	}
 
-	public void Undo(){
+	public void Delete(){
 	
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 		int triggerCount = triggers.Length;
 
-		for(int i = 0; i < triggerCount; i++)
-		{
-			Destroy (triggers[i]);
+		Destroy (triggers[triggerCount - 1]);
+
+		if (wheelPhase == true) {
+		
+			wheelPanel.MoveUp ();
+
+		} else {
+		
+			iconsLeft++;
+			iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
+		
 		}
 	
 	
@@ -608,7 +798,6 @@ public class TurnManagerScript : NetworkBehaviour {
 			wheelfromBuddy.GetComponent<WheelFromBuddyScript> ().FillBlueColorArray ();
 		}
 	}
-
 
 	//sends blue array to server game manager
 	[Command]
@@ -654,6 +843,35 @@ public class TurnManagerScript : NetworkBehaviour {
 		}
 	}
 
+	void StraightenGhost () {
+
+		for (int i = 0; i < 2; i++) {
+			
+			float newXPos = Mathf.Round (ghosts[i].transform.position.x);
+			float newZPos = Mathf.Round (ghosts[i].transform.position.z);
+			Vector3 newPos = new Vector3 (newXPos, ghosts[i].transform.position.y, newZPos);
+			ghosts[i].transform.position = newPos;
+
+			float roundedAngle = (Mathf.Round (ghosts[i].transform.eulerAngles.y / 90)) * 90;
+			Vector3 newAngle = new Vector3 (ghosts[i].transform.eulerAngles.x, roundedAngle, ghosts[i].transform.eulerAngles.z);
+			ghosts[i].transform.eulerAngles = newAngle;
+		}
+	
+	
+	}
+
+	void ClearArray (){
+
+		for (int i = 0; i < fromPinkGhost.Length; i++) {
+
+			fromPinkGhost [i] = 0;
+			fromBlueGhost [i] = 0;
+			blueGhostIcon [i] = null;
+			pinkGhostIcon [i] = null;
+
+		}
+				
+	}
 
 
 

@@ -2,8 +2,9 @@
 using System.Collections;
 
 public class ColliderDetectionScript : MonoBehaviour {
-	
-	private WindmillScript windmill;
+
+	private GameObject windmill;
+	private WindmillScript windmillScript;
 
 	GameObject ghostOne;
 	GameObject ghostTwo;
@@ -11,7 +12,8 @@ public class ColliderDetectionScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		windmill = gameObject.transform.parent.GetComponent<WindmillScript> ();
+		windmill = gameObject.transform.parent.gameObject;
+		windmillScript = windmill.GetComponent<WindmillScript> ();
 	
 	}
 
@@ -19,26 +21,28 @@ public class ColliderDetectionScript : MonoBehaviour {
 		
 		if (other.gameObject.tag == "Player") {
 
-			if (windmill.ghostOne == null) {
-				windmill.ghostOne = other.gameObject;
+			if (windmillScript.ghostOne == null) {
+				windmillScript.ghostOne = other.gameObject;
 				ghostOne = other.gameObject;
 			} else {
-				windmill.ghostTwo = other.gameObject;
+				windmillScript.ghostTwo = other.gameObject;
 				ghostTwo = other.gameObject;
+
 			}
 		}
+
 	}
 
 	void OnTriggerExit(Collider other) {
 		Debug.Log (other.gameObject.tag);
 		if (other.gameObject.tag == "Player") {
 			if (other.gameObject == ghostOne) {
-				Debug.Log ("Out2");
-				windmill.ghostOne = null;
+				windmillScript.ghostOne = null;
+				ghostOne.transform.parent = null;
 				ghostOne = null;
 			} else {
-				Debug.Log ("Out3");
-				windmill.ghostTwo = null;
+				windmillScript.ghostTwo = null;
+				ghostTwo.transform.parent = null;
 				ghostTwo = null;
 			}
 		}
