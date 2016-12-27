@@ -15,6 +15,9 @@ public class GameSetupScript : NetworkBehaviour {
 	public Image colorBarButtons;
 
 
+	public bool bluePlayerHere = false;
+
+
 	public override void OnStartLocalPlayer(){
 	
 		int networkNum = (int)netId.Value;
@@ -41,6 +44,7 @@ public class GameSetupScript : NetworkBehaviour {
 			ButtonsToBlue ();
 			GameObject.FindGameObjectWithTag ("Camera Two").SetActive (false);
 			GameObject.FindGameObjectWithTag ("Signal Circle Message").GetComponent<WheelFromBuddyScript> ().networkNum = 2;
+			CmdBluePlayerHere ();
 
 		}
 	
@@ -55,36 +59,8 @@ public class GameSetupScript : NetworkBehaviour {
 		{
 			GameObject canvas = this.gameObject.transform.GetChild(0).gameObject;
 			Destroy (canvas);
-			//GameObject eventSystem = this.gameObject.transform.GetChild(0).GetChild(0).gameObject;
-
 
 		}
-
-		if (isLocalPlayer)
-		{
-//			string networkNum = netId.ToString();
-//
-//			eventSystem.SetActive (true);
-//			if (networkNum == "1") {
-//
-//				gameObject.name = "Pink Game Manager";
-//				pink = new Color (1.0f, .8f, .808f, 1.0f);
-//				ButtonsToPink ();
-//			
-//			}
-//
-//			if (networkNum == "2") {
-//
-//				gameObject.name = "Blue Game Manager";
-//				blue = new Color (.74f, .945f, 1.0f, 1.0f);
-//				ButtonsToBlue ();
-//
-//			}
-
-		}
-
-
-		
 	}
 	
 	// Update is called once per frame
@@ -126,5 +102,11 @@ public class GameSetupScript : NetworkBehaviour {
 
 	}
 
+	[Command]
+	public void CmdBluePlayerHere () {
+
+		GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ().BluePlayerThere ();
+
+	}
 
 }

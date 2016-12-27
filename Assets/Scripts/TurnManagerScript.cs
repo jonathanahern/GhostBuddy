@@ -10,6 +10,9 @@ public class TurnManagerScript : NetworkBehaviour {
 	public GameObject pinkGhost;
 	public GameObject blueGhost;
 
+	bool bluePlayerThere = false;
+	public bool otherPlayerReady = true;
+
 	public GameObject[] ghosts = new GameObject[2];
 
 	public bool winning;
@@ -64,8 +67,8 @@ public class TurnManagerScript : NetworkBehaviour {
 	private int direction = 1;
 	string networkNum = "10";
 
-	bool placedIcons = false;
-	bool receivedIcons = false;
+	public bool placedIcons = false;
+	public bool receivedIcons = false;
 	public GameObject readyToSeeSign;
 	public GameObject loseScreen;
 	public GameObject winScreen;
@@ -82,10 +85,6 @@ public class TurnManagerScript : NetworkBehaviour {
 	public GameObject[] pinkGhostIcon = new GameObject[11];
 	private GameObject[] iconList = new GameObject[20];
 	public GameObject[] combinedIcons = new GameObject[14];
-
-
-	public SyncListInt ghostOneList = new SyncListInt();
-	public SyncListInt ghostTwoList = new SyncListInt();
 
 
 	public override void OnStartLocalPlayer() {
@@ -139,6 +138,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		if ((placedIcons == true) && (receivedIcons == true)) {
 		
+			TellOtherPlayerNotReady ();
 			ReadyToSee ();
 			placedIcons = false;
 			receivedIcons = false;
@@ -486,19 +486,85 @@ public class TurnManagerScript : NetworkBehaviour {
 	//Finished placing moves
 	public void TurnDone () {
 
+		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
+
 		waitScreen.SetActive (true);
 
 		if (wheelPhase == false) {
 		
 			buttonPanel.MoveDown ();
 
+		} else if (wheelPhase == true && triggers.Length == 0) {
+		
+			wheelPanel.MoveDown ();
+
 		}
+
+		if (networkNum == "2" && otherPlayerReady == true) {
+
+			SendArray ();
+
+		} else if (networkNum == "2" && otherPlayerReady == false) {
+
+			InvokeRepeating ("WaitingForOtherPlayer", 1.0f, 1.0f);
+
+		} else if (networkNum == "1" && bluePlayerThere == true && otherPlayerReady == true) {
+		
+			SendArray ();
+
+		} else if (networkNum == "1" && bluePlayerThere == true && otherPlayerReady == false) {
+
+			InvokeRepeating ("WaitingForOtherPlayer", 1.0f, 1.0f);
+
+		} else if (networkNum == "1" && bluePlayerThere == false) {
+		
+			InvokeRepeating ("LookingForBlue", 1.0f, 1.0f);
+
+		}
+	}
+
+	void LookingForBlue () {
+	
+		if (bluePlayerThere == true) {
+
+			CancelInvoke ();
+			SendArray ();
+		}
+	
+	}
+
+	void WaitingForOtherPlayer () {
+
+		if (otherPlayerReady == true) {
+
+			CancelInvoke ();
+			SendArray ();
+		}
+
+	}
+
+	void SendArray () {
 
 		placedIcons = true;
 		//Counts number of icons
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 		int triggerCount = triggers.Length;
 		int triggerOrder = 0;
+
+		//in case blank is sent
+		if (triggerCount == 0) {
+
+			if (networkNum == "2") {
+				CmdBlueSendArray (fromBlueGhost);
+				CmdBlueSendColorArray (colorArray);
+			}
+
+			if (networkNum == "1") {
+				RpcPinkSendColorArray (colorArray);
+				RpcPinkSendArray (fromPinkGhost);
+			}
+		}
+
 		//Places int icons into an array (fromBlueGhost) along with the order
 		for(int i = 0; i < triggerCount; i++)
 		{
@@ -514,38 +580,44 @@ public class TurnManagerScript : NetworkBehaviour {
 				RpcPinkSendColorArray (colorArray);
 				//Sends the array the other self on server
 				RpcPinkSendArray (fromPinkGhost);
-			
+
 			}
 		}
+
+
 	}
 
 	//Turns the blue int array into prefab array (blueGhostIcon)
 	public void FillBlueArray () {
 
+		receivedIcons = true;
+
 		for(int i = 0; i < fromBlueGhost.Length; i++)
 		{
 			blueGhostIcon [i] = iconList [fromBlueGhost [i]];
 
-			if (i == fromBlueGhost.Length - 1) {
-			
-				receivedIcons = true;
-
-			}
+//			if (i == fromBlueGhost.Length - 1) {
+//			
+//				receivedIcons = true;
+//
+//			}
 		}
 	}
 
 	//Turns the blue int array into prefab array (blueGhostIcon)
 	public void FillPinkArray () {
 
+		receivedIcons = true;
+
 		for(int i = 0; i < fromPinkGhost.Length; i++)
 		{
 			pinkGhostIcon [i] = iconList [fromPinkGhost [i]];
 
-			if (i == fromPinkGhost.Length - 1) {
-
-				receivedIcons = true;
-
-			}
+//			if (i == fromPinkGhost.Length - 1) {
+//
+//				receivedIcons = true;
+//
+//			}
 		}
 	}
 
@@ -597,6 +669,29 @@ public class TurnManagerScript : NetworkBehaviour {
 		if (wheelPhase == true) {
 		
 			PlayCombinedIcons ();
+
+			int pinkTotWheel = 0;
+			int blueTotWheel = 0;
+
+			for (int i = 0; i < fromBlueGhost.Length; i++) {
+
+				if (fromBlueGhost [i] > 0) {
+					blueTotWheel++;
+				}
+			}
+
+			for (int i = 0; i < fromPinkGhost.Length; i++) {
+
+				if (fromPinkGhost [i] > 0) {
+					pinkTotWheel++;
+				}
+			}
+
+			if (blueTotWheel == 0 && pinkTotWheel == 0) {
+
+				BeginNewTurn ();
+
+			}
 		
 		} else {
 
@@ -615,6 +710,12 @@ public class TurnManagerScript : NetworkBehaviour {
 				if (fromPinkGhost [i] > 0) {
 					pinkTot++;
 				}
+			}
+
+			if (blueTot == 0 && pinkTot == 0) {
+			
+				BeginNewTurn ();
+
 			}
 				
 			int diff = blueTot - pinkTot;
@@ -702,6 +803,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			blueTot = 0;
 			PlayCombinedIcons ();
 
+
 		}
 	}
 
@@ -755,6 +857,8 @@ public class TurnManagerScript : NetworkBehaviour {
 		{
 			Destroy (triggers[i]);
 		}
+
+		TellOtherPlayerReady ();
 	}
 
 	public void Delete(){
@@ -873,7 +977,71 @@ public class TurnManagerScript : NetworkBehaviour {
 				
 	}
 
+	public void BluePlayerThere (){
 
+		bluePlayerThere = true;
+
+	}
+
+
+	void TellOtherPlayerReady () {
+	
+		if (networkNum == "1") {
+			RpcTellOtherPlayerReady ();
+		} else 
+		
+		{
+		
+			CmdTellOtherPlayerReady ();
+		
+		}
+			
+	}
+	[ClientRpc]
+	public void RpcTellOtherPlayerReady (){
+
+		TurnManagerScript localManager = GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ();
+
+		if (localManager.networkNum == "2") { 
+				localManager.otherPlayerReady = true;
+		}
+
+	}
+
+	[Command]
+	public void CmdTellOtherPlayerReady (){
+
+		GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ().otherPlayerReady = true;
+	}
+
+	void TellOtherPlayerNotReady () {
+
+		if (networkNum == "1") {
+			RpcTellOtherPlayerNotReady ();
+		} else 
+
+		{
+
+			CmdTellOtherPlayerNotReady ();
+
+		}
+
+	}
+	[ClientRpc]
+	public void RpcTellOtherPlayerNotReady (){
+
+		TurnManagerScript localManager = GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ();
+
+		if (localManager.networkNum == "2") { 
+			localManager.otherPlayerReady = false;
+		}
+
+	}
+
+	[Command]
+	public void CmdTellOtherPlayerNotReady (){
+
+		GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ().otherPlayerReady = false;
+	}
 
 }
-
