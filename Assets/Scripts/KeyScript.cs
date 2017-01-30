@@ -1,10 +1,12 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class KeyScript : MonoBehaviour {
 
 	public bool playerOneCanCollect = false;
 	public bool playerTwoCanCollect = false;
+
 
 	// Use this for initialization
 	void Start () {
@@ -21,39 +23,38 @@ public class KeyScript : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other){
 
-		if (other.gameObject.CompareTag ("Player One") && playerOneCanCollect == true) {
 
-			other.gameObject.GetComponent<GhostMovementScript> ().CmdAddKey ();
+		if (other.gameObject.name == "Pink Ghost(Clone)" && playerOneCanCollect == true) {
+
+			GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent <GameCountScript> ().keyCount++;
 			Destroy (gameObject);
 			return;
 		}
 
-		else if (other.gameObject.CompareTag ("Player Two") && playerTwoCanCollect == true) {
+		else if (other.gameObject.name == "Blue Ghost(Clone)" && playerTwoCanCollect == true) {
 
-			other.gameObject.GetComponent<GhostMovementScript> ().CmdAddKey ();
+			GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent <GameCountScript> ().keyCount++;
 			Destroy (gameObject);
 			return;
 		}
 
-		else if (other.gameObject.CompareTag ("Player One") && playerOneCanCollect == false) {
-
-			other.gameObject.GetComponent<GhostMovementScript> ().CmdAddHit ();
-			other.gameObject.GetComponent<GhostMovementScript> ().CmdAddHit ();
+		else if (other.gameObject.name == "Pink Ghost(Clone)" && playerOneCanCollect == false) {
+		
+			TurnManagerScript turnManager = GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent <TurnManagerScript> ();
+			turnManager.gameLost = true;
+			turnManager.LoseGame ();
 			return;
 		}
 
-		else if (other.gameObject.CompareTag ("Player Two") && playerTwoCanCollect == false) {
+		else if (other.gameObject.name == "Blue Ghost(Clone)" && playerTwoCanCollect == false) {
 
-			other.gameObject.GetComponent<GhostMovementScript> ().CmdAddHit ();
-			other.gameObject.GetComponent<GhostMovementScript> ().CmdAddHit ();
-			return;
-		}
-		else if (other.gameObject.name == "Ghost(Clone)") {
-
-			Destroy (gameObject);
+			TurnManagerScript turnManager = GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent <TurnManagerScript> ();
+			turnManager.gameLost = true;
+			turnManager.LoseGame ();
 
 			return;
 		}
+
 	}
 
 }

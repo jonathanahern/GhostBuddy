@@ -8,14 +8,14 @@ public class LookAtScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 	
-		target = GameObject.FindGameObjectWithTag ("MainCamera");
+		//target = GameObject.FindGameObjectWithTag ("Player");
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
-		transform.LookAt(target.transform);
+		//transform.LookAt(target.transform);
 
 	}
 }

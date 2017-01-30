@@ -65,7 +65,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	bool rotating = false;
 	private int direction = 1;
-	string networkNum = "10";
+	public string networkNum = "10";
 
 	public bool placedIcons = false;
 	public bool receivedIcons = false;
@@ -85,6 +85,8 @@ public class TurnManagerScript : NetworkBehaviour {
 	public GameObject[] pinkGhostIcon = new GameObject[11];
 	private GameObject[] iconList = new GameObject[20];
 	public GameObject[] combinedIcons = new GameObject[14];
+
+	public GameObject myBackground;
 
 
 	public override void OnStartLocalPlayer() {
@@ -481,6 +483,13 @@ public class TurnManagerScript : NetworkBehaviour {
 		for (int i = 0; i < gearItems.Length; i++) {
 			gearItems [i].GetComponent<WindmillScript> ().RotateWindmill ();
 		}
+
+		GameObject[] evilGhosts = GameObject.FindGameObjectsWithTag ("Slime");
+		for (int i = 0; i < evilGhosts.Length; i++) {
+			evilGhosts [i].GetComponent<SlimeScript> ().RotateSlime ();
+		}
+
+
 	}
 
 	//Finished placing moves
@@ -545,6 +554,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	void SendArray () {
 
+		Debug.Log ("Send Array Happened");
+
 		placedIcons = true;
 		//Counts number of icons
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
@@ -556,6 +567,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 			if (networkNum == "2") {
 				CmdBlueSendArray (fromBlueGhost);
+				Debug.Log ("Send Array1: " + triggerCount);
 				CmdBlueSendColorArray (colorArray);
 			}
 
@@ -573,6 +585,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			if (i == triggerCount - 1 && networkNum == "2") {
 				//Sends the array the other self on server
 				CmdBlueSendArray (fromBlueGhost);
+				Debug.Log ("Send Array2: " + triggerCount);
 				CmdBlueSendColorArray (colorArray);
 			}
 
@@ -596,11 +609,6 @@ public class TurnManagerScript : NetworkBehaviour {
 		{
 			blueGhostIcon [i] = iconList [fromBlueGhost [i]];
 
-//			if (i == fromBlueGhost.Length - 1) {
-//			
-//				receivedIcons = true;
-//
-//			}
 		}
 	}
 
@@ -613,11 +621,6 @@ public class TurnManagerScript : NetworkBehaviour {
 		{
 			pinkGhostIcon [i] = iconList [fromPinkGhost [i]];
 
-//			if (i == fromPinkGhost.Length - 1) {
-//
-//				receivedIcons = true;
-//
-//			}
 		}
 	}
 
@@ -892,6 +895,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		if (networkNum == "2") {
 			wheelfromBuddy.GetComponent<WheelFromBuddyScript> ().FillPinkColorArray ();
+			myBackground.GetComponent<ColorCodeScript> ().FillPinkColorArray ();
 		}
 
 	}
@@ -900,6 +904,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		if (networkNum == "1") {
 			wheelfromBuddy.GetComponent<WheelFromBuddyScript> ().FillBlueColorArray ();
+			myBackground.GetComponent<ColorCodeScript> ().FillBlueColorArray ();
 		}
 	}
 
@@ -931,6 +936,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		GameObject wheelManager = GameObject.FindWithTag ("Signal Circle Message");
 		wheelManager.GetComponent<WheelFromBuddyScript> ().fromBlueGhostColors = blueColorArray;
+		GameObject theirBackground = GameObject.FindGameObjectWithTag ("Color Spiral 1");
+		theirBackground.GetComponent<ColorCodeScript> ().fromBlueGhostColors = blueColorArray;
 	
 	}
 
@@ -943,6 +950,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 			GameObject wheelManager = GameObject.FindWithTag ("Signal Circle Message");
 			wheelManager.GetComponent<WheelFromBuddyScript> ().fromPinkGhostColors = pinkColorArray;
+			GameObject theirBackground = GameObject.FindGameObjectWithTag ("Color Spiral 2");
+			theirBackground.GetComponent<ColorCodeScript> ().fromPinkGhostColors = pinkColorArray;
 
 		}
 	}
@@ -986,6 +995,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	void TellOtherPlayerReady () {
 	
+		Debug.Log ("told them i'm ready");
+
 		if (networkNum == "1") {
 			RpcTellOtherPlayerReady ();
 		} else 

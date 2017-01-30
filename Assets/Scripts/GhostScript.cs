@@ -29,6 +29,18 @@ public class GhostScript : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other) {
 
+		if (other.tag == "Slime") {
+
+			Debug.Log ("SLIMED");
+
+			turnManager.LoseGame ();
+			turnManager.gameLost = true;
+			turnManager.forwardBlueGhost = false;
+			turnManager.forwardPinkGhost = false;
+
+		}
+
+
 		if (other.tag == "Player") {
 		
 			turnManager.winning = true;
@@ -50,6 +62,8 @@ public class GhostScript : MonoBehaviour {
 				turnManager.backBlueGhost = true;
 
 			}
+
+
 
 		}
 

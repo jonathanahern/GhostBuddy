@@ -16,6 +16,7 @@ public class GameSetupScript : NetworkBehaviour {
 
 
 	public bool bluePlayerHere = false;
+	public TurnManagerScript turnMan;
 
 
 	public override void OnStartLocalPlayer(){
@@ -33,6 +34,8 @@ public class GameSetupScript : NetworkBehaviour {
 			ButtonsToPink ();
 			GameObject.FindGameObjectWithTag ("Camera One").SetActive (false);
 			GameObject.FindGameObjectWithTag ("Signal Circle Message").GetComponent<WheelFromBuddyScript> ().networkNum = 1;
+			turnMan.myBackground = GameObject.FindGameObjectWithTag ("Color Spiral 1");
+
 
 		}
 
@@ -44,6 +47,7 @@ public class GameSetupScript : NetworkBehaviour {
 			ButtonsToBlue ();
 			GameObject.FindGameObjectWithTag ("Camera Two").SetActive (false);
 			GameObject.FindGameObjectWithTag ("Signal Circle Message").GetComponent<WheelFromBuddyScript> ().networkNum = 2;
+			turnMan.myBackground = GameObject.FindGameObjectWithTag ("Color Spiral 2");
 			CmdBluePlayerHere ();
 
 		}
