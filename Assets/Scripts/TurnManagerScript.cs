@@ -65,7 +65,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	bool rotating = false;
 	private int direction = 1;
-	public string networkNum = "10";
+	private string networkNum;
 
 	public bool placedIcons = false;
 	public bool receivedIcons = false;
@@ -135,6 +135,8 @@ public class TurnManagerScript : NetworkBehaviour {
 		{
 			return;
 		}
+
+		Debug.Log (networkNum);
 
 		turnsText.text = turnsLeft.ToString ();
 
@@ -567,12 +569,13 @@ public class TurnManagerScript : NetworkBehaviour {
 
 			if (networkNum == "2") {
 				CmdBlueSendArray (fromBlueGhost);
-				Debug.Log ("Send Array1: " + triggerCount);
+
 				CmdBlueSendColorArray (colorArray);
 			}
 
 			if (networkNum == "1") {
 				RpcPinkSendColorArray (colorArray);
+				Debug.Log ("Send Array1: " + triggerCount);
 				RpcPinkSendArray (fromPinkGhost);
 			}
 		}
@@ -585,19 +588,18 @@ public class TurnManagerScript : NetworkBehaviour {
 			if (i == triggerCount - 1 && networkNum == "2") {
 				//Sends the array the other self on server
 				CmdBlueSendArray (fromBlueGhost);
-				Debug.Log ("Send Array2: " + triggerCount);
+
 				CmdBlueSendColorArray (colorArray);
 			}
 
 			if (i == triggerCount - 1 && networkNum == "1") {
 				RpcPinkSendColorArray (colorArray);
+				Debug.Log ("Send Array2: " + triggerCount);
 				//Sends the array the other self on server
 				RpcPinkSendArray (fromPinkGhost);
 
 			}
 		}
-
-
 	}
 
 	//Turns the blue int array into prefab array (blueGhostIcon)
@@ -614,6 +616,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	//Turns the blue int array into prefab array (blueGhostIcon)
 	public void FillPinkArray () {
+
+		Debug.Log ("FillPinkArray");
 
 		receivedIcons = true;
 
@@ -923,7 +927,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	[ClientRpc]
 	public void RpcPinkSendArray (int[] pinkArray){
 		//fromBlueGhost = blueArray;
-
+		Debug.Log ("RpcPinkSendArray: " + networkNum);
 		if (networkNum != "1") {
 			GameObject localGameManager = GameObject.FindWithTag ("Game Manager Local");
 			localGameManager.GetComponent<TurnManagerScript> ().fromPinkGhost = pinkArray;
@@ -945,6 +949,8 @@ public class TurnManagerScript : NetworkBehaviour {
 	[ClientRpc]
 	public void RpcPinkSendColorArray (int[] pinkColorArray){
 		//fromBlueGhost = blueArray;
+
+		Debug.Log ("RpcPinkSendColorArray: " + networkNum);
 
 		if (networkNum != "1") {
 

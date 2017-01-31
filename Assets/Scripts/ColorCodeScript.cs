@@ -50,6 +50,9 @@ public class ColorCodeScript : MonoBehaviour {
 		colorGoal = colorOne;
 
 		background = GetComponent<MeshRenderer> ();
+		background.sharedMaterial.SetColor ("_TopColor", colorList [90]);
+		background.sharedMaterial.SetColor ("_MidColor", colorList [92]);
+		background.sharedMaterial.SetColor ("_BottomColor", colorList [93]);
 
 	}
 	
@@ -57,10 +60,6 @@ public class ColorCodeScript : MonoBehaviour {
 	void Update () {
 
 		background.sharedMaterial.SetFloat ("_Rotate", Mathf.Repeat (Time.time * rotateSpeed, 1.0f));
-
-		if (Input.GetKeyDown (KeyCode.A)) {
-			FillPinkColorArray ();
-		}
 
 
 	}
