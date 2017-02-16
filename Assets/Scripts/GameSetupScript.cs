@@ -20,6 +20,11 @@ public class GameSetupScript : NetworkBehaviour {
 	public bool bluePlayerHere = false;
 	public TurnManagerScript turnMan;
 
+	[SyncVar]
+	public int sendData;
+
+	[SyncVar]
+	public int rpcData;
 
 	public override void OnStartLocalPlayer(){
 	
@@ -53,6 +58,14 @@ public class GameSetupScript : NetworkBehaviour {
 			CmdBluePlayerHere ();
 
 		}
+
+		InvokeRepeating ("CmdSendData", 1.0f, 5.0f);
+
+		if (!isServer) {
+			return;
+		}
+
+		InvokeRepeating ("RpcSendData", .5f, 5.0f);
 	
 	
 	}
@@ -116,6 +129,20 @@ public class GameSetupScript : NetworkBehaviour {
 	public void CmdBluePlayerHere () {
 
 		GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ().BluePlayerThere ();
+
+	}
+
+	[Command]
+	public void CmdSendData (){
+	
+		sendData++;
+
+	}
+
+	[ClientRpc]
+	public void RpcSendData (){
+
+		rpcData++;
 
 	}
 

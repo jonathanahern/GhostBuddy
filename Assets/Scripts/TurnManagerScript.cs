@@ -9,6 +9,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public GameObject pinkGhost;
 	public GameObject blueGhost;
+	private GhostScript myGhostScript;
 
 	bool bluePlayerThere = false;
 	public bool otherPlayerReady = true;
@@ -23,6 +24,8 @@ public class TurnManagerScript : NetworkBehaviour {
 	private Vector3 blueGhostPos;
 	private Vector3 pinkStartPos;
 	private Vector3 blueStartPos;
+	private Vector3 pinkBackOnePos;
+	private Vector3 blueBackOnePos;
 
 	public GameObject speechPanel;
 
@@ -30,7 +33,10 @@ public class TurnManagerScript : NetworkBehaviour {
 	public bool forwardBlueGhost = false;
 	public bool backPinkGhost = false;
 	public bool backBlueGhost = false;
+	bool backwardPinkGhost = false;
+	bool backwardBlueGhost = false;
 	public bool gameLost = false;
+	bool buttonCushion = false;
 
 	public float turnsLeft;
 	public Text turnsText;
@@ -138,12 +144,19 @@ public class TurnManagerScript : NetworkBehaviour {
 		pinkGhost.transform.position = playerOneSpawn.transform.position;
 		pinkGhost.transform.rotation = playerOneSpawn.transform.rotation;
 		pinkGhost.GetComponent<GhostScript> ().AssignCameras (networkNum);
+		if (networkNum == "1") {
+			myGhostScript = pinkGhost.GetComponent<GhostScript> ();
+		}
 
 		GameObject playerTwoSpawn = GameObject.FindGameObjectWithTag ("Spawn Two");
 		blueGhost = Instantiate(Resources.Load("Blue Ghost", typeof(GameObject))) as GameObject;
 		blueGhost.transform.position = playerTwoSpawn.transform.position;
 		blueGhost.transform.rotation = playerTwoSpawn.transform.rotation;
 		blueGhost.GetComponent<GhostScript> ().AssignCameras (networkNum);
+
+		if (networkNum == "2") {
+			myGhostScript = blueGhost.GetComponent<GhostScript> ();
+		}
 
 		ghosts [0] = blueGhost;
 		ghosts [1] = pinkGhost;
@@ -175,8 +188,6 @@ public class TurnManagerScript : NetworkBehaviour {
 			}
 
 		}
-
-		Debug.Log (networkNum);
 
 		turnsText.text = turnsLeft.ToString ();
 
@@ -220,6 +231,21 @@ public class TurnManagerScript : NetworkBehaviour {
 			}
 		}
 
+		if (backwardPinkGhost == true) {
+
+			pinkGhostPos = new Vector3 (pinkGhost.transform.position.x,
+				pinkGhost.transform.position.y,
+				pinkGhost.transform.position.z);
+
+			pinkGhost.transform.position = Vector3.Lerp (pinkGhostPos, pinkBackOnePos, Time.deltaTime * 14);
+
+			if (pinkGhost.transform.position == pinkBackOnePos) {
+
+				backwardPinkGhost = false;
+
+			}
+		}
+
 		if (forwardBlueGhost == true) {
 
 			blueGhostPos = new Vector3 (blueGhost.transform.position.x,
@@ -249,6 +275,21 @@ public class TurnManagerScript : NetworkBehaviour {
 
 			}
 		}
+
+		if (backwardBlueGhost == true) {
+
+			blueGhostPos = new Vector3 (blueGhost.transform.position.x,
+				blueGhost.transform.position.y,
+				blueGhost.transform.position.z);
+
+			blueGhost.transform.position = Vector3.Lerp (blueGhostPos, blueBackOnePos, Time.deltaTime * 14);
+
+			if (blueGhost.transform.position == blueBackOnePos) {
+
+				backwardBlueGhost = false;
+
+			}
+		}
 	}
 
 	public void PlaceWheelIcon () {
@@ -273,9 +314,15 @@ public class TurnManagerScript : NetworkBehaviour {
 	
 	}
 
+	void ButtonCushion () {
+	
+		buttonCushion = false;
+
+	}
+
 	public void PlaceForwardGhost(){
 
-		if (iconsLeft < 1) {
+		if (iconsLeft < 1 || buttonCushion == true) {
 			return;
 		}
 
@@ -284,6 +331,8 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeft--;
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
+		buttonCushion = true;
+		Invoke ("ButtonCushion", .6f);
 
 		if (networkNum == "1") {
 	
@@ -309,7 +358,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void PlaceRightIcon() {
 
-		if (iconsLeft < 1) {
+		if (iconsLeft < 1 || buttonCushion == true) {
 			return;
 		}
 
@@ -318,6 +367,8 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeft--;
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
+		buttonCushion = true;
+		Invoke ("ButtonCushion", .6f);
 
 		if (networkNum == "1") {
 
@@ -344,7 +395,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void PlaceLeftIcon() {
 
-		if (iconsLeft < 1) {
+		if (iconsLeft < 1 || buttonCushion == true) {
 			return;
 		}
 
@@ -353,6 +404,8 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeft--;
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
+		buttonCushion = true;
+		Invoke ("ButtonCushion", .6f);
 
 		if (networkNum == "1") {
 
@@ -377,7 +430,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void PlaceNaptIcon() {
 
-		if (iconsLeft < 1) {
+		if (iconsLeft < 1 || buttonCushion == true) {
 			return;
 		}
 
@@ -386,6 +439,8 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeft--;
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
+		buttonCushion = true;
+		Invoke ("ButtonCushion", .6f);
 
 		if (networkNum == "1") {
 
@@ -405,10 +460,9 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	void DeleteEmpty(){
-	
+
 		GameObject empty = GameObject.FindGameObjectWithTag ("Empty");
 		Destroy (empty);
-
 	}
 		
 
@@ -422,30 +476,37 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	}
 
-	public void RotateRightPink () {
+	public void BackwardPink (){
 		
+		StraightenGhost ();
+		pinkStartPos = pinkGhost.transform.position;
+		pinkBackOnePos = pinkGhost.transform.position + pinkGhost.transform.forward;
+		backwardPinkGhost = true;
+
+	}
+
+	public void RotateRightPink () {
 
 		direction = 1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(pinkGhost, rotation2, 1f));
+		StartCoroutine(RotateObject(pinkGhost, rotation2, .5f));
 		StraightenGhost ();
+
 	}
 
 	public void RotateLeftPink () {
 		
-		
 		direction = -1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(pinkGhost, rotation2, 1f));
+		StartCoroutine(RotateObject(pinkGhost, rotation2, .5f));
 		StraightenGhost ();
 
 	}
 
 	public void ForwardBlue () {
 		
-
 		blueStartPos = blueGhost.transform.position;
 		blueEndPos = blueGhost.transform.position - blueGhost.transform.forward;
 		forwardBlueGhost = true;
@@ -453,23 +514,30 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	}
 
+	public void BackwardBlue () {
+
+		StraightenGhost ();
+		blueStartPos = blueGhost.transform.position;
+		blueBackOnePos = blueGhost.transform.position + blueGhost.transform.forward;
+		backwardBlueGhost = true;
+
+	}
+
 	public void RotateRightBlue () {
 		
-
 		direction = 1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(blueGhost, rotation2, 1f));
+		StartCoroutine(RotateObject(blueGhost, rotation2, .5f));
 		StraightenGhost ();
 	}
 
 	public void RotateLeftBlue () {
 		
-
 		direction = -1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(blueGhost, rotation2, 1f));
+		StartCoroutine(RotateObject(blueGhost, rotation2, .5f));
 		StraightenGhost ();
 
 	}
@@ -494,57 +562,85 @@ public class TurnManagerScript : NetworkBehaviour {
 		rotating = false;
 	}
 
-	public void BackToOriginalPositionPink () {
+//	public void BackToOriginalPositionPink () {
+//
+//		if (gameLost == false) {
+//			pinkGhost.transform.position = origPos;
+//			pinkGhost.transform.eulerAngles = origRot;
+//		}
+//
+//	}
+//
+//	public void BackToOriginalPositionBlue () {
+//
+//		if (gameLost == false) {
+//			blueGhost.transform.position = origPos;
+//			blueGhost.transform.eulerAngles = origRot;
+//		}
+//
+//	}
 
-		if (gameLost == false) {
+	void BackToOriginalPosition(){
+
+		if (networkNum == "1") {
 			pinkGhost.transform.position = origPos;
 			pinkGhost.transform.eulerAngles = origRot;
 		}
 
-	}
-
-	public void BackToOriginalPositionBlue () {
-
-		if (gameLost == false) {
+		if (networkNum == "2") {
 			blueGhost.transform.position = origPos;
 			blueGhost.transform.eulerAngles = origRot;
 		}
-
+			
 	}
 
-	public void PlaybackButton () {
+	void RecordPosition(){
 
 		if (networkNum == "1") {
 			origPos = pinkGhost.transform.position;
 			origRot = pinkGhost.transform.eulerAngles;
-			GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
-			int triggerCount = triggers.Length;
-			float seconds = 0;
-			for (int i = 0; i < triggerCount; i++) {
-				triggers [i].GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
-				seconds = seconds + 1.9f;
-				if (i == (triggerCount - 1)) {
-					Invoke ("BackToOriginalPositionPink", seconds + 1);
-				}
-			}
 		}
 
 		if (networkNum == "2") {
 			origPos = blueGhost.transform.position;
 			origRot = blueGhost.transform.eulerAngles;
-			GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
-			int triggerCount = triggers.Length;
-			float seconds = 0;
-			for (int i = 0; i < triggerCount; i++) {
-				triggers [i].GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
-				seconds = seconds + 1.9f;
-				if (i == (triggerCount - 1)) {
-					Invoke ("BackToOriginalPositionBlue", seconds + 1);
-				}
-			}
 		}
 
 	}
+		
+//	public void PlaybackButton () {
+//
+//		if (networkNum == "1") {
+//			origPos = pinkGhost.transform.position;
+//			origRot = pinkGhost.transform.eulerAngles;
+//			GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
+//			int triggerCount = triggers.Length;
+//			float seconds = 0;
+//			for (int i = 0; i < triggerCount; i++) {
+//				triggers [i].GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
+//				seconds = seconds + 1.9f;
+//				if (i == (triggerCount - 1)) {
+//					Invoke ("BackToOriginalPositionPink", seconds + 1);
+//				}
+//			}
+//		}
+//
+//		if (networkNum == "2") {
+//			origPos = blueGhost.transform.position;
+//			origRot = blueGhost.transform.eulerAngles;
+//			GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
+//			int triggerCount = triggers.Length;
+//			float seconds = 0;
+//			for (int i = 0; i < triggerCount; i++) {
+//				triggers [i].GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
+//				seconds = seconds + 1.9f;
+//				if (i == (triggerCount - 1)) {
+//					Invoke ("BackToOriginalPositionBlue", seconds + 1);
+//				}
+//			}
+//		}
+//
+//	}
 
 	void PlayCombinedIcons () {
 
@@ -608,6 +704,8 @@ public class TurnManagerScript : NetworkBehaviour {
 		
 			buttonPanel.MoveDown ();
 			preview = false;
+			BackToOriginalPosition ();
+			myGhostScript.PreviewModeOff ();
 
 		} else if (wheelPhase == true && triggers.Length == 0) {
 		
@@ -944,6 +1042,9 @@ public class TurnManagerScript : NetworkBehaviour {
 				deleteNull.SetActive (false);
 				buttonPanel.MoveUp ();
 				preview = true;
+				RecordPosition ();
+				myGhostScript.PreviewModeOn ();
+
 				for (int i = 0; i < 7; i++) {
 
 					GameObject empty = Instantiate (emptyPrefab, new Vector3 (0, 0, 0), Quaternion.identity);
@@ -1017,13 +1118,13 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void Delete(){
 	
-		if (wheelPhase == true || placedIcons == true) {
+		if (wheelPhase == true || placedIcons == true || buttonCushion == true) {
 			return;
 		}
 
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 		int triggerCount = triggers.Length;
-
+		triggers [triggerCount - 1].GetComponent<TriggerScript> ().UndoAction ();
 		Destroy (triggers[triggerCount - 1]);
 
 		if (wheelPhase == true) {
@@ -1040,8 +1141,9 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		GameObject empty = Instantiate (emptyPrefab, new Vector3 (0, 0, 0), Quaternion.identity);
 		empty.transform.SetParent (scrollList.transform, false);
-	
-	
+		buttonCushion = true;
+		Invoke ("ButtonCushion", .6f);
+
 	}
 
 	public void LoseGame() {
@@ -1219,14 +1321,17 @@ public class TurnManagerScript : NetworkBehaviour {
 	[Command]
 	public void CmdSendBubble(string phrase, string ghostNum) {
 	
-		RpcSendBubble (phrase, ghostNum);
-	
+		GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript>().RpcSendBubble (phrase, ghostNum);
+		Debug.Log ("Got to CMD bubble: " + phrase + ghostNum);
+
 	}
 
 	[ClientRpc]
 	public void RpcSendBubble(string phrase, string ghostNum) {
 
-		Invoke ("BubblesDone", 5.0f);
+		Debug.Log ("Got to RPC bubble: " + phrase + ghostNum);
+
+		Invoke ("BubblesDone", 4.5f);
 
 		if (ghostNum == "1") {
 			GameObject ghost = GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ().pinkGhost;

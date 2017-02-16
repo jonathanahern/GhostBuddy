@@ -26,6 +26,8 @@ public class BubbleScript : MonoBehaviour {
 		localMan.GetComponent<TurnManagerScript> ().CmdSendBubble (phrase, ghostNum);
 		localMan.GetComponent<TurnManagerScript> ().speechPanel.GetComponent<SpeechBubbleScript> ().moveDown = true;
 
+		Debug.Log ("Bubble: " + phrase + ghostNum + localMan.name);
+
 
 	}
 }

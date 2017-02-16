@@ -7,7 +7,6 @@ public class HiddenWallScript : MonoBehaviour {
 	public Material transferMat;
 	public Material wallMat;
 	private bool colorUp;
-	private bool alreadyHit = false;
 	private MeshRenderer myMesh;
 
 	void Start(){
@@ -32,11 +31,9 @@ public class HiddenWallScript : MonoBehaviour {
 			Color currentColor = myMesh.material.color;
 			Color lerpedColor = Color.Lerp(currentColor, Color.black, Time.deltaTime * 1.0f);
 			myMesh.material.color = lerpedColor;
-			gameObject.name = "Wall";
 
-			if (lerpedColor.a < .05f) {
+			if (lerpedColor.a < .08f) {
 				GetComponent<Renderer>().material = wallMat;
-				gameObject.tag = "Wall";
 				colorUp = false;
 			}
 
@@ -45,28 +42,14 @@ public class HiddenWallScript : MonoBehaviour {
 
 
 	}
+		
+	public void SwitchMat () {
 
-	void OnTriggerEnter(Collider other) {
-	
-		if (other.tag == "Player") {
-
-			if (alreadyHit == false) {
-				
-				GetComponent<Renderer> ().material = transferMat;
-				gameObject.layer = LayerMask.NameToLayer ("Default");
-				colorUp = true;
-				alreadyHit = true;
-			}
-
-		}
-
-	}
-
-	public void SwitchTag () {
-
-
-
-
+		GetComponent<Renderer> ().material = transferMat;
+		gameObject.layer = LayerMask.NameToLayer ("Default");
+		colorUp = true;
+		gameObject.tag = "Wall";
+		gameObject.name = "Wall";
 
 	}
 

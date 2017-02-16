@@ -16,6 +16,8 @@ public class TriggerScript : MonoBehaviour {
 	public bool napTriggerBlue;
 	public bool gearTrigger;
 
+	public bool hitWall;
+
 	private TurnManagerScript gameManager;
 	private GameObject glow;
 	private bool timerbool;
@@ -193,6 +195,45 @@ public class TriggerScript : MonoBehaviour {
 		else if (napTriggerBlue == true) {
 
 			gameManager.fromBlueGhost [arrayOrder] = 5;
+
+		}
+	}
+
+	public void UndoAction () {
+
+		if (forwardTriggerPink == true && hitWall == false) {
+
+			gameManager.BackwardPink ();
+
+		}
+
+		else if (rightTriggerPink == true) {
+
+			gameManager.RotateLeftPink ();
+
+		}
+
+		else if (leftTriggerPink == true) {
+
+			gameManager.RotateRightPink ();
+
+		}
+
+		else if (forwardTriggerBlue == true  && hitWall == false) {
+
+			gameManager.BackwardBlue ();
+
+		}
+
+		else if (rightTriggerBlue == true) {
+
+			gameManager.RotateLeftBlue ();
+
+		}
+
+		else if (leftTriggerBlue == true) {
+
+			gameManager.RotateRightBlue ();
 
 		}
 	}
