@@ -16,9 +16,9 @@ public class GameManagerScript : NetworkBehaviour {
 	public Color white;
 	public Color grey;
 
-	private Image frisbeeWedge1;
-	private Image frisbeeWedge2;
-	private Image frisbeeWedge3;
+//	private Image frisbeeWedge1;
+//	private Image frisbeeWedge2;
+//	private Image frisbeeWedge3;
 
 	public GameObject signalWheel;
 
@@ -79,10 +79,10 @@ public class GameManagerScript : NetworkBehaviour {
 		waitText = GameObject.FindGameObjectWithTag ("Wait Text");
 		waitText.SetActive (false);
 
-		GameObject frisbeeObject = GameObject.FindGameObjectWithTag ("Signal Circle Message");
-		frisbeeWedge1 = frisbeeObject.transform.GetChild(0).gameObject.GetComponent <Image>();
-		frisbeeWedge2 = frisbeeObject.transform.GetChild(1).gameObject.GetComponent <Image>();
-		frisbeeWedge3 = frisbeeObject.transform.GetChild(2).gameObject.GetComponent <Image>();
+//		GameObject frisbeeObject = GameObject.FindGameObjectWithTag ("Signal Circle Message");
+//		frisbeeWedge1 = frisbeeObject.transform.GetChild(0).gameObject.GetComponent <Image>();
+//		frisbeeWedge2 = frisbeeObject.transform.GetChild(1).gameObject.GetComponent <Image>();
+//		frisbeeWedge3 = frisbeeObject.transform.GetChild(2).gameObject.GetComponent <Image>();
 
 		wedge1 = new Color (1.0f, 1.0f, 1.0f, 1.0f);
 		wedge2 = new Color (1.0f, 1.0f, 1.0f, 1.0f);
@@ -183,22 +183,22 @@ public class GameManagerScript : NetworkBehaviour {
 		}
 	}
 
-	public void UpdateColors () {
-
-				if (gameManagerId != playerTurn) {
-		
-					frisbeeWedge1.color = wedge1;
-					frisbeeWedge2.color = wedge2;
-					frisbeeWedge3.color = wedge3;
-		
-				}
-		
-				if (gameManagerId == playerTurn) {
-		
-					//signalWheel.GetComponent<ColorButtonScript> ().EndTurnSignal ();
-		
-				}
-	}
+//	public void UpdateColors () {
+//
+//				if (gameManagerId != playerTurn) {
+//		
+//					frisbeeWedge1.color = wedge1;
+//					frisbeeWedge2.color = wedge2;
+//					frisbeeWedge3.color = wedge3;
+//		
+//				}
+//		
+//				if (gameManagerId == playerTurn) {
+//		
+//					//signalWheel.GetComponent<ColorButtonScript> ().EndTurnSignal ();
+//		
+//				}
+//	}
 
 	public void BackToWhite () {
 	

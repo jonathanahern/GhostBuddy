@@ -10,12 +10,14 @@ public class LookAtScript : MonoBehaviour {
 	
 		//target = GameObject.FindGameObjectWithTag ("Player");
 
+
 	}
+
+
 	
 	// Update is called once per frame
 	void Update () {
-	
-		//transform.LookAt(target.transform);
 
+		transform.rotation = target.transform.rotation;
 	}
 }

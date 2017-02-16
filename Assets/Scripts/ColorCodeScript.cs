@@ -50,9 +50,9 @@ public class ColorCodeScript : MonoBehaviour {
 		colorGoal = colorOne;
 
 		background = GetComponent<MeshRenderer> ();
-		background.sharedMaterial.SetColor ("_TopColor", colorList [90]);
-		background.sharedMaterial.SetColor ("_MidColor", colorList [92]);
-		background.sharedMaterial.SetColor ("_BottomColor", colorList [93]);
+		background.sharedMaterial.SetColor ("_TopColor", colorList [94]);
+		background.sharedMaterial.SetColor ("_MidColor", colorList [95]);
+		background.sharedMaterial.SetColor ("_BottomColor", colorList [95]);
 
 	}
 	

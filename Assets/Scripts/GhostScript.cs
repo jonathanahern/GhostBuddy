@@ -1,11 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GhostScript : MonoBehaviour {
 
 	GameObject gameManager;
 	TurnManagerScript turnManager;
+
+	public GameObject canvas;
+	public GameObject speechBubble;
+	public Text speechText;
 
 	// Use this for initialization
 	void Start () {
@@ -62,7 +67,24 @@ public class GhostScript : MonoBehaviour {
 				turnManager.backBlueGhost = true;
 
 			}
+		}
 
+		if (other.tag == "Hidden Wall" && turnManager.preview == false) {
+
+			if (gameObject.name == "Pink Ghost(Clone)") {
+
+				turnManager.forwardPinkGhost = false;
+				turnManager.backPinkGhost = true;
+
+			}
+
+			if (gameObject.name == "Blue Ghost(Clone)") {
+
+				turnManager.forwardBlueGhost = false;
+				turnManager.backBlueGhost = true;
+
+			}
+		
 
 
 		}
@@ -84,6 +106,7 @@ public class GhostScript : MonoBehaviour {
 				GetComponent<Rigidbody> ().useGravity = true;
 			}
 		}
+
 	}
 
 	void OnTriggerExit (Collider other)
@@ -96,4 +119,30 @@ public class GhostScript : MonoBehaviour {
 		}
 
 	}
+
+	public void ShowBubble (string speech){
+	
+		speechText.text = speech;
+		speechBubble.SetActive (true);
+		Invoke ("HideBubble", 3.5f);
+	}
+
+	void HideBubble(){
+	
+		speechBubble.SetActive (false);
+
+	}
+
+	public void AssignCameras(string playerId){
+	
+		if (playerId == "1") {
+			canvas.GetComponent<LookAtScript> ().target = GameObject.FindGameObjectWithTag ("Camera Two");
+
+		} else {
+			canvas.GetComponent<LookAtScript> ().target = GameObject.FindGameObjectWithTag ("Camera One");
+		}
+	
+	}
+
+
 }
