@@ -10,6 +10,9 @@ public class TurnManagerScript : NetworkBehaviour {
 	public GameObject pinkGhost;
 	public GameObject blueGhost;
 	private GhostScript myGhostScript;
+	public GameObject pinkShell;
+	public GameObject blueShell;
+
 
 	bool bluePlayerThere = false;
 	public bool otherPlayerReady = true;
@@ -94,6 +97,10 @@ public class TurnManagerScript : NetworkBehaviour {
 	public GameObject loseScreen;
 	public GameObject winScreen;
 
+	private LineRenderer pinkLine;
+	private LineRenderer blueLine;
+	private int pinkPoints;
+	private int bluePoints;
 
 	private GameObject myCamera;
 
@@ -144,6 +151,13 @@ public class TurnManagerScript : NetworkBehaviour {
 		pinkGhost.transform.position = playerOneSpawn.transform.position;
 		pinkGhost.transform.rotation = playerOneSpawn.transform.rotation;
 		pinkGhost.GetComponent<GhostScript> ().AssignCameras (networkNum);
+
+		pinkLine = pinkGhost.GetComponent<GhostScript> ().lineRend;
+//		Vector3 pinkPoint = new Vector3 (pinkGhost.transform.position.x, .15f, pinkGhost.transform.position.z);
+//		pinkPoints = 1;
+//		pinkLine.numPositions = pinkPoints;
+//		pinkLine.SetPosition (pinkPoints - 1, pinkPoint);
+
 		if (networkNum == "1") {
 			myGhostScript = pinkGhost.GetComponent<GhostScript> ();
 		}
@@ -153,6 +167,12 @@ public class TurnManagerScript : NetworkBehaviour {
 		blueGhost.transform.position = playerTwoSpawn.transform.position;
 		blueGhost.transform.rotation = playerTwoSpawn.transform.rotation;
 		blueGhost.GetComponent<GhostScript> ().AssignCameras (networkNum);
+
+		blueLine = blueGhost.GetComponent<GhostScript> ().lineRend;
+//		Vector3 bluePoint = new Vector3 (blueGhost.transform.position.x, .15f, blueGhost.transform.position.z);
+//		bluePoints = 1;
+//		blueLine.numPositions = bluePoints;
+//		blueLine.SetPosition (bluePoints - 1, bluePoint);
 
 		if (networkNum == "2") {
 			myGhostScript = blueGhost.GetComponent<GhostScript> ();
@@ -210,9 +230,8 @@ public class TurnManagerScript : NetworkBehaviour {
 			pinkGhost.transform.position = Vector3.Lerp (pinkGhostPos, pinkEndPos, Time.deltaTime * 10);
 
 			if (pinkGhost.transform.position == pinkEndPos) {
-			
 				forwardPinkGhost = false;
-			
+
 			}
 		}
 
@@ -467,12 +486,19 @@ public class TurnManagerScript : NetworkBehaviour {
 		
 
 	public void ForwardPink () {
-		
 
 		pinkStartPos = pinkGhost.transform.position;
 		pinkEndPos = pinkGhost.transform.position - pinkGhost.transform.forward;
 		forwardPinkGhost = true;
 		StraightenGhost ();
+
+		if (preview == true) {
+			
+			AddLinePointsPink (pinkEndPos);
+			if (pinkShell.activeInHierarchy == false) {
+				PinkShellAppear ();
+			}
+		}
 
 	}
 
@@ -482,6 +508,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		pinkStartPos = pinkGhost.transform.position;
 		pinkBackOnePos = pinkGhost.transform.position + pinkGhost.transform.forward;
 		backwardPinkGhost = true;
+		DeletePoint ();
 
 	}
 
@@ -506,11 +533,18 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void ForwardBlue () {
-		
+
 		blueStartPos = blueGhost.transform.position;
 		blueEndPos = blueGhost.transform.position - blueGhost.transform.forward;
 		forwardBlueGhost = true;
 		StraightenGhost ();
+
+		if (preview == true) {
+			AddLinePointsBlue (blueEndPos);
+			if (blueShell.activeInHierarchy == false) {
+				BlueSheelAppear ();
+			}
+		}
 
 	}
 
@@ -520,6 +554,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		blueStartPos = blueGhost.transform.position;
 		blueBackOnePos = blueGhost.transform.position + blueGhost.transform.forward;
 		backwardBlueGhost = true;
+		DeletePoint ();
 
 	}
 
@@ -540,6 +575,65 @@ public class TurnManagerScript : NetworkBehaviour {
 		StartCoroutine(RotateObject(blueGhost, rotation2, .5f));
 		StraightenGhost ();
 
+	}
+
+	void PinkShellAppear () {
+
+		pinkShell.SetActive (true);
+		pinkShell.transform.position = origPos;
+		pinkShell.transform.eulerAngles = origRot;
+
+	}
+
+	void BlueSheelAppear () {
+
+		blueShell.SetActive (true);
+		blueShell.transform.position = origPos;
+		blueShell.transform.eulerAngles = origRot;
+
+	}
+
+	void AddLinePointsPink (Vector3 newPoint){
+
+		Vector3 pinkPoint = new Vector3 (newPoint.x, .15f, newPoint.z);
+
+		pinkPoints++;
+		pinkLine.numPositions = pinkPoints;
+		pinkLine.SetPosition (pinkPoints - 1, pinkPoint);
+	
+	}
+
+	void AddLinePointsBlue (Vector3 newPoint){
+
+		Vector3 bluePoint = new Vector3 (newPoint.x, .15f, newPoint.z);
+
+		bluePoints++;
+		blueLine.numPositions = bluePoints;
+		blueLine.SetPosition (bluePoints - 1, bluePoint);
+
+	}
+
+	public void DeletePoint (){
+
+		Debug.Log ("DeletePoint");
+
+		if (networkNum == "2") {
+			bluePoints--;
+			blueLine.numPositions = bluePoints;
+		} else if (networkNum == "1") {
+			pinkPoints--;
+			pinkLine.numPositions = pinkPoints;
+		}
+
+	}
+
+	void RestartLineRender (){
+	
+		bluePoints = 0;
+		pinkPoints = 0;
+		pinkLine.numPositions = pinkPoints;
+		blueLine.numPositions = bluePoints;
+	
 	}
 
 	IEnumerator RotateObject (GameObject gameObjectToMove, Quaternion newRot, float duration)
@@ -585,11 +679,13 @@ public class TurnManagerScript : NetworkBehaviour {
 		if (networkNum == "1") {
 			pinkGhost.transform.position = origPos;
 			pinkGhost.transform.eulerAngles = origRot;
+			pinkShell.SetActive (false);
 		}
 
 		if (networkNum == "2") {
 			blueGhost.transform.position = origPos;
 			blueGhost.transform.eulerAngles = origRot;
+			blueShell.SetActive (false);
 		}
 			
 	}
@@ -706,6 +802,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			preview = false;
 			BackToOriginalPosition ();
 			myGhostScript.PreviewModeOff ();
+			RestartLineRender ();
 
 		} else if (wheelPhase == true && triggers.Length == 0) {
 		
@@ -1044,6 +1141,8 @@ public class TurnManagerScript : NetworkBehaviour {
 				preview = true;
 				RecordPosition ();
 				myGhostScript.PreviewModeOn ();
+				AddLinePointsBlue (blueGhost.transform.position);
+				AddLinePointsPink (pinkGhost.transform.position);
 
 				for (int i = 0; i < 7; i++) {
 

@@ -15,8 +15,10 @@ public class GhostScript : MonoBehaviour {
 	public MeshRenderer body;
 	public MeshRenderer leftArm;
 	public MeshRenderer rightArm;
+	public LineRenderer lineRend;
 
 	private bool previewTime;
+
 
 
 	// Use this for initialization
@@ -94,6 +96,7 @@ public class GhostScript : MonoBehaviour {
 				GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 				int triggerCount = triggers.Length;
 				triggers [triggerCount - 1].GetComponent<TriggerScript> ().hitWall = true;
+				turnManager.DeletePoint ();
 			
 			}
 
