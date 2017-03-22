@@ -15,24 +15,31 @@ public class GhostScript : MonoBehaviour {
 	public MeshRenderer body;
 	public MeshRenderer leftArm;
 	public MeshRenderer rightArm;
+	public MeshRenderer head;
 	public LineRenderer lineRend;
 
 	private bool previewTime;
-
+	public AudioClip wallHit;
+	private AudioSource source;
 
 
 	// Use this for initialization
 	void Start () {
 		
 		Invoke ("FindManager", 2.0f);
+		source = GetComponent<AudioSource>();
 		
 	}
 
 	void Update (){
+
+		if (Input.GetKeyDown(KeyCode.P)){
+			HitWallSound();
+		}
 	
 		if (previewTime == true) {
 
-			float alpha = (Mathf.PingPong(Time.time * .5f, .5f)) + .3f;
+			float alpha = (Mathf.PingPong(Time.time * .5f, .5f)) + .15f;
 
 			Color colorGoal = new Color (body.material.color.r,
 										body.material.color.g,
@@ -42,6 +49,7 @@ public class GhostScript : MonoBehaviour {
 			body.material.color = colorGoal;
 			leftArm.material.color = colorGoal;
 			rightArm.material.color = colorGoal;
+			head.material.color = colorGoal;
 		}
 	
 	
@@ -100,6 +108,8 @@ public class GhostScript : MonoBehaviour {
 			
 			}
 
+			HitWallSound ();
+
 
 		}
 
@@ -118,7 +128,8 @@ public class GhostScript : MonoBehaviour {
 				turnManager.backBlueGhost = true;
 
 			}
-		
+
+			HitWallSound ();
 			other.GetComponent<HiddenWallScript> ().SwitchMat ();
 
 		}
@@ -152,6 +163,14 @@ public class GhostScript : MonoBehaviour {
 
 		}
 
+	}
+
+	void HitWallSound(){
+	
+		Debug.Log ("hitWall");
+		float vol = Random.Range (.6f, .75f);
+		source.PlayOneShot(wallHit,vol);
+	
 	}
 
 	public void ShowBubble (string speech){
@@ -197,6 +216,7 @@ public class GhostScript : MonoBehaviour {
 			1.0f);
 
 		body.material.color = colorGoal;
+		head.material.color = colorGoal;
 		leftArm.material.color = colorGoal;
 		rightArm.material.color = colorGoal;
 

@@ -22,9 +22,13 @@ public class ColorButtonScript : MonoBehaviour {
 	private Color[] colorList = new Color[99];
 
 	public TurnManagerScript turnManager;
+	AudioSource source;
+	public AudioClip buzz;
 
 
 	void Start () {
+
+		source = GetComponent<AudioSource> ();
 
 		blue = new Color (.09f, .31f, .447f, 1.0f);
 		green = new Color (0.0f, .286f, .235f, 1.0f);
@@ -47,6 +51,8 @@ public class ColorButtonScript : MonoBehaviour {
 
 	public void ChangeWedgeOne () {
 	
+		source.PlayOneShot (buzz, .2f);
+
 		if (firstTab.color == white) {
 			firstTab.color = pink;
 			wedge [0] = 90;
@@ -73,6 +79,8 @@ public class ColorButtonScript : MonoBehaviour {
 
 	public void ChangeWedgeTwo () {
 
+		source.PlayOneShot (buzz, .2f);
+
 		if (secondTab.color == white) {
 			secondTab.color = pink;
 			wedge [1] = 90;
@@ -98,6 +106,8 @@ public class ColorButtonScript : MonoBehaviour {
 	}
 
 	public void ChangeWedgeThree () {
+
+		source.PlayOneShot (buzz, .2f);
 
 		if (thirdTab.color == white) {
 			thirdTab.color = pink;

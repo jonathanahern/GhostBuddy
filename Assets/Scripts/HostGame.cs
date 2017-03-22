@@ -10,6 +10,7 @@ public class HostGame : MonoBehaviour {
 	private string roomName;
 
 	private NetworkManager networkManager;
+	AudioSource source;
 
 	void Awake()
 	{
@@ -18,6 +19,7 @@ public class HostGame : MonoBehaviour {
 
 	void Start (){
 	
+		source = GetComponent<AudioSource> ();
 		networkManager = NetworkManager.singleton;
 		if (networkManager.matchMaker == null) {
 		

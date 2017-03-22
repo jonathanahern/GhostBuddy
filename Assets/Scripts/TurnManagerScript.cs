@@ -119,8 +119,24 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public GameObject myBackground;
 
-	//placed icons, if 
+	public AudioSource source;
+	public AudioSource source2;
+	public AudioClip changeBackground;
+	public AudioClip sendBackground;
+	public AudioClip leftTurn;
+	public AudioClip rightTurn;
+	public AudioClip forwardSound;
+	public AudioClip napSound;
+	public AudioClip deleteSound;
+	public AudioClip gear;
+	public AudioClip doneSound;
+	public AudioClip blip;
 
+	private float pitchMin = .65f;
+	private float pitchMax = .85f;
+
+	public float toneVol;
+	public AudioClip[] tones; 
 
 	public override void OnStartLocalPlayer() {
 
@@ -189,6 +205,25 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	void Update (){
+
+		if (Input.GetKeyDown(KeyCode.I)) {
+		
+			source2.PlayOneShot (leftTurn, .2f);
+
+		}
+
+		if (Input.GetKeyDown(KeyCode.O)) {
+
+			source2.PlayOneShot (rightTurn, .2f);
+
+		}
+
+		if (Input.GetKeyDown(KeyCode.P)) {
+
+			source2.PlayOneShot (forwardSound, .2f);
+
+		}
+
 
 		if (!isLocalPlayer)
 		{
@@ -345,6 +380,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			return;
 		}
 
+		PlayTone ();
 		DeleteEmpty ();
 	
 		iconsLeft--;
@@ -381,6 +417,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			return;
 		}
 
+		PlayTone ();
 		DeleteEmpty ();
 
 		iconsLeft--;
@@ -418,6 +455,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			return;
 		}
 
+		PlayTone ();
 		DeleteEmpty ();
 
 		iconsLeft--;
@@ -447,11 +485,15 @@ public class TurnManagerScript : NetworkBehaviour {
 	
 	}
 
-	public void PlaceNaptIcon() {
+	public void PlaceNapIcon() {
+
+		Debug.Log ("NAP: " + iconsLeft);
 
 		if (iconsLeft < 1 || buttonCushion == true) {
 			return;
 		}
+
+		PlayTone ();
 
 		DeleteEmpty ();
 
@@ -492,12 +534,19 @@ public class TurnManagerScript : NetworkBehaviour {
 		forwardPinkGhost = true;
 		StraightenGhost ();
 
+
+
 		if (preview == true) {
 			
 			AddLinePointsPink (pinkEndPos);
 			if (pinkShell.activeInHierarchy == false) {
 				PinkShellAppear ();
 			}
+		} else {
+		
+			source2.pitch = Random.Range (pitchMin, pitchMax);
+			source2.PlayOneShot (forwardSound, .2f);
+		
 		}
 
 	}
@@ -514,6 +563,11 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void RotateRightPink () {
 
+		if (preview == false) {
+			source2.pitch = Random.Range (pitchMin, pitchMax);
+			source2.PlayOneShot (rightTurn, .2f);
+		}
+
 		direction = 1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
@@ -523,7 +577,11 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void RotateLeftPink () {
-		
+
+		if (preview == false) {
+			source2.pitch = Random.Range (pitchMin, pitchMax);
+			source2.PlayOneShot (leftTurn, .2f);
+		}
 		direction = -1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
@@ -544,6 +602,11 @@ public class TurnManagerScript : NetworkBehaviour {
 			if (blueShell.activeInHierarchy == false) {
 				BlueSheelAppear ();
 			}
+		} else {
+
+			source2.pitch = Random.Range (pitchMin, pitchMax);
+			source2.PlayOneShot (forwardSound, .2f);
+
 		}
 
 	}
@@ -559,7 +622,11 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void RotateRightBlue () {
-		
+
+		if (preview == false) {
+			source2.pitch = Random.Range (pitchMin, pitchMax);
+			source2.PlayOneShot (rightTurn, .2f);
+		}
 		direction = 1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
@@ -568,13 +635,23 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void RotateLeftBlue () {
-		
+
+		if (preview == false) {
+			source2.pitch = Random.Range (pitchMin, pitchMax);
+			source2.PlayOneShot (leftTurn, .2f);
+		}
 		direction = -1;
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
 		StartCoroutine(RotateObject(blueGhost, rotation2, .5f));
 		StraightenGhost ();
 
+	}
+
+	public void Nap (){
+	
+		source.PlayOneShot (napSound, .2f);
+	
 	}
 
 	void PinkShellAppear () {
@@ -766,6 +843,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void PlayGearItems () {
 
+		source2.PlayOneShot (gear, .2f);
+
 		GameObject[] gearItems = GameObject.FindGameObjectsWithTag ("Gear Item");
 		for (int i = 0; i < gearItems.Length; i++) {
 			gearItems [i].GetComponent<WindmillScript> ().RotateWindmill ();
@@ -781,6 +860,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	//Finished placing moves
 	public void TurnDone () {
+
+		source.PlayOneShot (doneSound, .3f);
 
 		GameObject[] empties = GameObject.FindGameObjectsWithTag ("Empty");
 
@@ -938,7 +1019,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 
 	void ReadyToSee () {
-		
+
+		source.PlayOneShot (blip, .25f);
 		readyToSeeSign.SetActive (true);
 
 	}
@@ -1221,6 +1303,11 @@ public class TurnManagerScript : NetworkBehaviour {
 			return;
 		}
 
+		PlayTone ();
+
+//		source2.pitch = Random.Range (pitchMin, pitchMax);
+//		source2.PlayOneShot (deleteSound, .75f);
+
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 		int triggerCount = triggers.Length;
 		triggers [triggerCount - 1].GetComponent<TriggerScript> ().UndoAction ();
@@ -1256,6 +1343,9 @@ public class TurnManagerScript : NetworkBehaviour {
 		if (networkNum == "2") {
 			//wheelfromBuddy.GetComponent<WheelFromBuddyScript> ().FillPinkColorArray ();
 			myBackground.GetComponent<ColorCodeScript> ().FillPinkColorArray ();
+			source.PlayOneShot (changeBackground, .2f);
+		} else {
+			source.PlayOneShot (sendBackground, .2f);
 		}
 
 	}
@@ -1265,6 +1355,9 @@ public class TurnManagerScript : NetworkBehaviour {
 		if (networkNum == "1") {
 			//wheelfromBuddy.GetComponent<WheelFromBuddyScript> ().FillBlueColorArray ();
 			myBackground.GetComponent<ColorCodeScript> ().FillBlueColorArray ();
+			source.PlayOneShot(changeBackground,.2f);
+		} else {
+			source.PlayOneShot (sendBackground, .2f);
 		}
 	}
 
@@ -1447,4 +1540,12 @@ public class TurnManagerScript : NetworkBehaviour {
 		GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ().doneWithBubble = true;
 	
 	}
+
+	void PlayTone () {
+
+		int toneNum = Random.Range (0, 4);
+		source.PlayOneShot (tones [toneNum], toneVol);
+
+	}
+
 }

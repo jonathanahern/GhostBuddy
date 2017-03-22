@@ -100,7 +100,7 @@ public class TriggerScript : MonoBehaviour {
 
 		else if (napTriggerPink == true) {
 
-			Debug.Log ("take a nap pink");
+			gameManager.Nap ();
 
 		}
 
@@ -130,7 +130,7 @@ public class TriggerScript : MonoBehaviour {
 	
 		else if (napTriggerBlue == true) {
 
-			Debug.Log ("take a nap blue");
+			gameManager.Nap ();
 
 		}
 	}
