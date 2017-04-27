@@ -10,16 +10,14 @@ public class HostGame : MonoBehaviour {
 	private string roomName;
 
 	private NetworkManager networkManager;
-	AudioSource source;
 
 	void Awake()
 	{
-		Screen.SetResolution(480,720,false);
+		Screen.SetResolution(480,768,false);
 	}
 
 	void Start (){
-	
-		source = GetComponent<AudioSource> ();
+
 		networkManager = NetworkManager.singleton;
 		if (networkManager.matchMaker == null) {
 		

@@ -4,6 +4,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class TurnManagerScript : NetworkBehaviour {
 
@@ -12,6 +13,10 @@ public class TurnManagerScript : NetworkBehaviour {
 	private GhostScript myGhostScript;
 	public GameObject pinkShell;
 	public GameObject blueShell;
+	private GameObject myGhost;
+	private GameObject theirGhost;
+	private GhostScript pinkScript;
+	private GhostScript blueScript;
 
 
 	bool bluePlayerThere = false;
@@ -20,6 +25,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	public GameObject[] ghosts = new GameObject[2];
 
 	public bool winning;
+	private CameraRotation camerRot;
 
 	private Vector3 pinkEndPos;
 	private Vector3 pinkGhostPos;
@@ -29,6 +35,10 @@ public class TurnManagerScript : NetworkBehaviour {
 	private Vector3 blueStartPos;
 	private Vector3 pinkBackOnePos;
 	private Vector3 blueBackOnePos;
+	Vector3 blueMidPos;
+	Vector3 pinkMidPos;
+	Vector3 blueCurPos;
+	Vector3 pinkCurPos;
 
 	public GameObject speechPanel;
 
@@ -41,10 +51,11 @@ public class TurnManagerScript : NetworkBehaviour {
 	public bool gameLost = false;
 	bool buttonCushion = false;
 
-	public float turnsLeft;
-	public Text turnsText;
-	//public Image timerCircle;
-	float totalTurns;
+	public float pointsTotal;
+	public Text pointsText;
+	public Image timerCircle;
+	//float totalTurns;
+	float turnPoints = 10.0f;
 
 	public GameObject deleteNull;
 	public GameObject turnBar;
@@ -63,6 +74,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	bool wheelPhase = true;
 	public WheelPanelScript buttonPanel;
 	public WheelPanelScript wheelPanel;
+	public ColorButtonScript colorBut;
 
 	public GameObject scrollList;
 
@@ -131,6 +143,8 @@ public class TurnManagerScript : NetworkBehaviour {
 	public AudioClip gear;
 	public AudioClip doneSound;
 	public AudioClip blip;
+	public AudioClip allDone;
+	public AudioClip beepTimer;
 
 	private float pitchMin = .65f;
 	private float pitchMax = .85f;
@@ -138,8 +152,39 @@ public class TurnManagerScript : NetworkBehaviour {
 	public float toneVol;
 	public AudioClip[] tones; 
 
+	float timer;
+	float timerStart;
+	private int timerInt;
+	public Text timerText;
+	private bool timerGo = false;
+	public Image timerOutline;
+	bool timerSoundTime;
+
+	public RectTransform starGold;
+	public RectTransform starSilver;
+	public RectTransform starBronze;
+
+	public RectTransform startPoint;
+	public RectTransform endPoint;
+
+	public float starGoldPoint;
+	public float starSilverPoint;
+	public float starBronzePoint;
+
+	bool goldHit;
+	bool silverHit;
+	bool bronzeHit;
+
+	float timerTurn = 30.0f;
+	bool timerTurnGo;
+
+	private int idOne = 0;
+	private int idTwo = 0;
+
 	public override void OnStartLocalPlayer() {
 
+		timerText.text = "-";
+		timerStart = timer;
 		barRect = turnBar.GetComponent<RectTransform> ();
 		barRectEnd = turnBarEnd.GetComponent<RectTransform> ();
 		startBarPosX = barRect.anchoredPosition.x;
@@ -160,7 +205,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconList [15] = napIconPink;
 
 		networkNum = netId.ToString();
-		totalTurns = turnsLeft;
+		//totalTurns = turnsLeft;
 
 		GameObject playerOneSpawn = GameObject.FindGameObjectWithTag ("Spawn One");
 		pinkGhost = Instantiate(Resources.Load("Pink Ghost", typeof(GameObject))) as GameObject;
@@ -168,15 +213,13 @@ public class TurnManagerScript : NetworkBehaviour {
 		pinkGhost.transform.rotation = playerOneSpawn.transform.rotation;
 		pinkGhost.GetComponent<GhostScript> ().AssignCameras (networkNum);
 
+		camerRot = GameObject.FindGameObjectWithTag ("Camera Center").GetComponent<CameraRotation> ();
+
 		pinkLine = pinkGhost.GetComponent<GhostScript> ().lineRend;
 //		Vector3 pinkPoint = new Vector3 (pinkGhost.transform.position.x, .15f, pinkGhost.transform.position.z);
 //		pinkPoints = 1;
 //		pinkLine.numPositions = pinkPoints;
 //		pinkLine.SetPosition (pinkPoints - 1, pinkPoint);
-
-		if (networkNum == "1") {
-			myGhostScript = pinkGhost.GetComponent<GhostScript> ();
-		}
 
 		GameObject playerTwoSpawn = GameObject.FindGameObjectWithTag ("Spawn Two");
 		blueGhost = Instantiate(Resources.Load("Blue Ghost", typeof(GameObject))) as GameObject;
@@ -185,14 +228,30 @@ public class TurnManagerScript : NetworkBehaviour {
 		blueGhost.GetComponent<GhostScript> ().AssignCameras (networkNum);
 
 		blueLine = blueGhost.GetComponent<GhostScript> ().lineRend;
+
+		pinkScript = pinkGhost.GetComponent<GhostScript> ();
+		blueScript = blueGhost.GetComponent<GhostScript> ();
 //		Vector3 bluePoint = new Vector3 (blueGhost.transform.position.x, .15f, blueGhost.transform.position.z);
 //		bluePoints = 1;
 //		blueLine.numPositions = bluePoints;
 //		blueLine.SetPosition (bluePoints - 1, bluePoint);
 
+		if (networkNum == "1") {
+			myGhostScript = pinkGhost.GetComponent<GhostScript> ();
+			myGhost = pinkGhost;
+			theirGhost = blueGhost;
+		}
+
 		if (networkNum == "2") {
 			myGhostScript = blueGhost.GetComponent<GhostScript> ();
+			myGhost = blueGhost;
+			theirGhost = pinkGhost;
 		}
+
+		pinkEndPos = pinkGhost.transform.position;
+		blueEndPos = blueGhost.transform.position;
+
+		camerRot.CameraRotate (theirGhost);
 
 		ghosts [0] = blueGhost;
 		ghosts [1] = pinkGhost;
@@ -202,33 +261,82 @@ public class TurnManagerScript : NetworkBehaviour {
 			colorArray[i] = 95;
 		}
 
+		PlaceStars ();
+
 	}
 
 	void Update (){
-
+//
 		if (Input.GetKeyDown(KeyCode.I)) {
 		
-			source2.PlayOneShot (leftTurn, .2f);
+			//source2.PlayOneShot (leftTurn, .2f);
+			StartTimer ("1");
 
 		}
-
-		if (Input.GetKeyDown(KeyCode.O)) {
-
-			source2.PlayOneShot (rightTurn, .2f);
-
-		}
-
-		if (Input.GetKeyDown(KeyCode.P)) {
-
-			source2.PlayOneShot (forwardSound, .2f);
-
-		}
+//
+//		if (Input.GetKeyDown(KeyCode.O)) {
+//
+//			source2.PlayOneShot (rightTurn, .2f);
+//
+//		}
+//
+//		if (Input.GetKeyDown(KeyCode.P)) {
+//
+//			source2.PlayOneShot (forwardSound, .2f);
+//
+//		}
 
 
 		if (!isLocalPlayer)
 		{
 			return;
 		}
+
+		if (timerGo == true) {
+
+			timer -= Time.deltaTime;
+			timerInt = Mathf.RoundToInt (timer);
+			timerText.text = timerInt.ToString ();
+			timerOutline.fillAmount = timer / timerStart;
+
+			if (timerInt == 5 && timerSoundTime == true) {
+			
+				timerSoundTime = false;
+				source.PlayOneShot (beepTimer, .1f);
+			
+			}
+
+
+
+			if (timer < .1) {
+				timerGo = false;
+				timerOutline.fillAmount = 0;
+				timerText.text = "-";
+				Debug.Log ("timer done");
+				if (wheelPhase == false) {
+				
+					TurnDone ();
+
+				} else {
+				
+					wheelPanel.MoveDown ();
+					colorBut.BackToWhite ();
+					PlaceWheelIcon ();
+				
+				}
+			}
+		}
+
+		if (timerTurnGo == true) {
+
+			timerTurn -= Time.deltaTime;
+
+			if (timerTurn < 1) {
+				timerTurnGo = false;
+				timerTurn = 0;
+			}
+		}
+
 
 		if (moveLeft == true) {
 
@@ -237,14 +345,14 @@ public class TurnManagerScript : NetworkBehaviour {
 
 			barRect.anchoredPosition = Vector2.Lerp (pos, nextTurnPos, Time.deltaTime * 2.0f);
 
-			if (pos.x - nextTurnPos.x < 3) {
+			if (nextTurnPos.x + pos.x > -5.0f) {
 				moveLeft = false;
 				barRect.anchoredPosition = nextTurnPos;
 			}
 
 		}
 
-		turnsText.text = turnsLeft.ToString ();
+		pointsText.text = pointsTotal.ToString ();
 
 		if ((placedIcons == true) && (receivedIcons == true) && (doneWithBubble == true)) {
 		
@@ -311,6 +419,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			if (blueGhost.transform.position == blueEndPos) {
 
 				forwardBlueGhost = false;
+				blueScript.StopAnimation ();
 
 			}
 		}
@@ -345,10 +454,45 @@ public class TurnManagerScript : NetworkBehaviour {
 			}
 		}
 	}
+		
+
+	public void StartTimer (string playerNumTime){
+	
+		Debug.Log ("starttime");
+
+		source.PlayOneShot (allDone, .1f);
+
+		if (networkNum == playerNumTime) {
+			timerSoundTime = true;
+			float timeAmt;
+			timeAmt = (timerTurn / 60.0f) * 15;
+			timer = timeAmt + 10;
+			timerStart = timeAmt + 10;
+			Debug.Log ("starttimeinside" + timer);
+
+			//Invoke ("PlayTimerSound", timeAmt + 5.0f);
+
+			timerGo = true;
+		}
+	}
+
+//	void PlayTimerSound (){
+//	
+//		source.PlayOneShot (beepTimer, .1f);
+//
+//	}
 
 	public void PlaceWheelIcon () {
 	
 		DeleteEmpty ();
+
+		if (timerGo == true) {
+
+			timerGo = false;
+			timerOutline.fillAmount = 0;
+			timerText.text = "-";
+
+		}
 
 		if (networkNum == "1") {
 
@@ -374,6 +518,12 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	}
 
+	void SaveSpots(){
+		pinkCurPos = pinkGhost.transform.position;
+		blueCurPos = blueGhost.transform.position;
+
+	}
+
 	public void PlaceForwardGhost(){
 
 		if (iconsLeft < 1 || buttonCushion == true) {
@@ -387,7 +537,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
 		buttonCushion = true;
-		Invoke ("ButtonCushion", .6f);
+		Invoke ("ButtonCushion", 1.0f);
 
 		if (networkNum == "1") {
 	
@@ -529,11 +679,29 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void ForwardPink () {
 
+		SaveSpots ();
+
+//		if (winning == true) {
+//			pinkStartPos = new Vector3 ((pinkGhost.transform.position.x + blueGhost.transform.position.x) / 2, blueGhost.transform.position.y, (pinkGhost.transform.position.z + blueGhost.transform.position.z) / 2);
+//			pinkEndPos = pinkStartPos - pinkGhost.transform.forward;
+//			pinkGhost.transform.DOJump (pinkEndPos, 1.0f, 0, 1.0f, false).SetEase(Ease.OutBounce).OnComplete (PinkGoIdle).SetId ("PinkForward");
+//			pinkScript.WalkAnimation ();
+//			Invoke ("BackToNormal", .9f);
+//			blueGhost.transform.DOMove (pinkStartPos, .5f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle).SetId ("BlueForward");
+//			blueScript.WalkAnimation ();
+//			return;
+//		}
+
+
 		pinkStartPos = pinkGhost.transform.position;
 		pinkEndPos = pinkGhost.transform.position - pinkGhost.transform.forward;
-		forwardPinkGhost = true;
-		StraightenGhost ();
+		//forwardPinkGhost = true;
+		pinkGhost.transform.DOMove (pinkEndPos, .9f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle).SetId ("PinkForward");
+		pinkScript.WalkAnimation ();
 
+		if (winning == false){
+			StraightenGhost ();
+		}
 
 
 		if (preview == true) {
@@ -551,9 +719,16 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	}
 
+	public void CorrectPink (){
+
+		pinkEndPos = pinkStartPos;
+	}
+
 	public void BackwardPink (){
 		
-		StraightenGhost ();
+		if (winning == false){
+			StraightenGhost ();
+		}
 		pinkStartPos = pinkGhost.transform.position;
 		pinkBackOnePos = pinkGhost.transform.position + pinkGhost.transform.forward;
 		backwardPinkGhost = true;
@@ -563,6 +738,8 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void RotateRightPink () {
 
+		SaveSpots ();
+
 		if (preview == false) {
 			source2.pitch = Random.Range (pitchMin, pitchMax);
 			source2.PlayOneShot (rightTurn, .2f);
@@ -570,13 +747,20 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		direction = 1;
 
+		pinkScript.WobbleAnimation ();
+		Invoke ("PinkGoIdle", 0.95f);
+
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(pinkGhost, rotation2, .5f));
-		StraightenGhost ();
+		StartCoroutine(RotateObject(pinkGhost, rotation2, 1.0f));
+		if (winning == false){
+			StraightenGhost ();
+		}
 
 	}
 
 	public void RotateLeftPink () {
+
+		SaveSpots ();
 
 		if (preview == false) {
 			source2.pitch = Random.Range (pitchMin, pitchMax);
@@ -584,18 +768,52 @@ public class TurnManagerScript : NetworkBehaviour {
 		}
 		direction = -1;
 
+		pinkScript.WobbleAnimation ();
+		Invoke ("PinkGoIdle", 0.95f);
+
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(pinkGhost, rotation2, .5f));
-		StraightenGhost ();
+		StartCoroutine(RotateObject(pinkGhost, rotation2, 1.0f));
+		if (winning == false){
+			StraightenGhost ();
+		}
+
+	}
+
+	void BlueGoIdle (){
+	
+		blueScript.StopAnimation ();
+	
+	}
+
+	void PinkGoIdle (){
+
+		pinkScript.StopAnimation ();
 
 	}
 
 	public void ForwardBlue () {
 
+		SaveSpots ();
+
+//		if (winning == true) {
+//			blueStartPos = new Vector3 ((pinkGhost.transform.position.x + blueGhost.transform.position.x) / 2, blueGhost.transform.position.y, (pinkGhost.transform.position.z + blueGhost.transform.position.z) / 2);
+//			blueEndPos = blueStartPos - blueGhost.transform.forward;
+//			blueGhost.transform.DOJump (blueEndPos, 1.0f, 0, 1.0f, false).SetEase(Ease.OutBounce).OnComplete (BlueGoIdle).SetId ("BlueForward");
+//			blueScript.WalkAnimation ();
+//			Invoke ("BackToNormal", .9f);
+//			pinkGhost.transform.DOMove (blueStartPos, .5f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle).SetId ("PinkForward");
+//			pinkScript.WalkAnimation ();
+//			return;
+//		}
+
 		blueStartPos = blueGhost.transform.position;
 		blueEndPos = blueGhost.transform.position - blueGhost.transform.forward;
-		forwardBlueGhost = true;
-		StraightenGhost ();
+		blueGhost.transform.DOMove (blueEndPos, .9f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle).SetId ("BlueForward");
+		//forwardBlueGhost = true;
+		blueScript.WalkAnimation ();
+		if (winning == false){
+			StraightenGhost ();
+		}
 
 		if (preview == true) {
 			AddLinePointsBlue (blueEndPos);
@@ -611,9 +829,27 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	}
 
+	public void CorrectBlue (){
+
+		blueEndPos = blueStartPos;
+	}
+
+	void BackToNormal (){
+
+		winning = false;
+		pinkGhost.GetComponent<CapsuleCollider> ().enabled = true;
+		blueGhost.GetComponent<CapsuleCollider> ().enabled = true;
+		pinkScript.detectors.SetActive (true);
+		blueScript.detectors.SetActive (true);
+
+
+	}
+
 	public void BackwardBlue () {
 
-		StraightenGhost ();
+		if (winning == false){
+			StraightenGhost ();
+		}
 		blueStartPos = blueGhost.transform.position;
 		blueBackOnePos = blueGhost.transform.position + blueGhost.transform.forward;
 		backwardBlueGhost = true;
@@ -623,18 +859,27 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void RotateRightBlue () {
 
+		SaveSpots ();
+
 		if (preview == false) {
 			source2.pitch = Random.Range (pitchMin, pitchMax);
 			source2.PlayOneShot (rightTurn, .2f);
 		}
 		direction = 1;
 
+		blueScript.WobbleAnimation ();
+		Invoke ("BlueGoIdle", 0.95f);
+
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(blueGhost, rotation2, .5f));
-		StraightenGhost ();
+		StartCoroutine(RotateObject(blueGhost, rotation2, 1.0f));
+		if (winning == false){
+			StraightenGhost ();
+		}
 	}
 
 	public void RotateLeftBlue () {
+
+		SaveSpots ();
 
 		if (preview == false) {
 			source2.pitch = Random.Range (pitchMin, pitchMax);
@@ -642,9 +887,14 @@ public class TurnManagerScript : NetworkBehaviour {
 		}
 		direction = -1;
 
+		blueScript.WobbleAnimation ();
+		Invoke ("BlueGoIdle", 0.95f);
+
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(blueGhost, rotation2, .5f));
-		StraightenGhost ();
+		StartCoroutine(RotateObject(blueGhost, rotation2, 1.0f));
+		if (winning == false){
+			StraightenGhost ();
+		}
 
 	}
 
@@ -652,6 +902,155 @@ public class TurnManagerScript : NetworkBehaviour {
 	
 		source.PlayOneShot (napSound, .2f);
 	
+	}
+
+	void ResetIds(){
+		idOne = 0;
+		idTwo = 0;
+	
+	}
+
+	//0= North - Z, 1= east - X, 2= south + Z, 3= west + X
+	public void InSameSquare (int id, int dir) {
+
+		if (id == 1 && idOne == 0) {
+			idOne = 1;
+		} else if (id == 2 && idTwo == 0) {
+			idTwo = 2;
+		} else if (id == 1 && idOne == 1) {
+			return;
+		} else if (id == 2 && idTwo == 2) {
+			return;
+		}
+
+		Invoke ("ResetIds", 1.2f);
+
+		Debug.Log (dir + "InSameSquare" + id);
+		Debug.Log ("Pink:" + pinkEndPos);
+		Debug.Log ("Blue:" + blueEndPos);
+		winning = true;
+		pinkGhost.GetComponent<CapsuleCollider> ().enabled = false;
+		blueGhost.GetComponent<CapsuleCollider> ().enabled = false;
+
+		if (id == 1) {
+			DOTween.Kill ("PinkForward", false);
+			pinkScript.StopAnimation ();
+			pinkScript.WobbleAnimation ();
+			int pinkFace = Mathf.RoundToInt(pinkGhost.transform.eulerAngles.y/90);
+
+			if (dir == 1) {
+				
+				if (pinkFace == 0) {
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .26f);
+				} else if (pinkFace == 1) {
+					pinkMidPos = new Vector3 (pinkEndPos.x + .26f, pinkEndPos.y, pinkEndPos.z);
+				} else if (pinkFace == 2) {
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+				} else if (pinkFace == 3) {
+					pinkMidPos = new Vector3 (pinkEndPos.x - .26f, pinkEndPos.y, pinkEndPos.z);
+				}
+					
+			} else if (dir == 2) {
+
+				if (pinkFace == 0) {
+					pinkMidPos = new Vector3 (pinkEndPos.x + .26f, pinkEndPos.y, pinkEndPos.z);
+				} else if (pinkFace == 1) {
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+				} else if (pinkFace == 2) {
+					pinkMidPos = new Vector3 (pinkEndPos.x - .26f, pinkEndPos.y, pinkEndPos.z);
+				} else if (pinkFace == 3) {
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .26f);
+				}
+					
+			} else if (dir == 3) {
+				
+				if (pinkFace == 0) {
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+				} else if (pinkFace == 1) {
+					pinkMidPos = new Vector3 (pinkEndPos.x - .26f, pinkEndPos.y, pinkEndPos.z);
+				} else if (pinkFace == 2) {
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .26f);
+				} else if (pinkFace == 3) {
+					pinkMidPos = new Vector3 (pinkEndPos.x + .26f, pinkEndPos.y, pinkEndPos.z);
+				}
+
+			} else if (dir == 4) {
+				
+				if (pinkFace == 0) {
+					pinkMidPos = new Vector3 (pinkEndPos.x - .26f, pinkEndPos.y, pinkEndPos.z);
+				} else if (pinkFace == 1) {
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .26f);
+				} else if (pinkFace == 2) {
+					pinkMidPos = new Vector3 (pinkEndPos.x + .26f, pinkEndPos.y, pinkEndPos.z);
+				} else if (pinkFace == 3) {
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+				}
+
+			}
+
+			pinkGhost.transform.DOMove (pinkMidPos, .5f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle);
+
+		}
+
+		if (id == 2) {
+			DOTween.Kill ("BlueForward", false);
+			blueScript.StopAnimation ();
+			blueScript.WobbleAnimation ();
+			int blueFace = Mathf.RoundToInt(blueGhost.transform.eulerAngles.y/90);
+
+			if (dir == 1) {
+				
+				if (blueFace == 0) {
+					blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z + .26f);
+				} else if (blueFace == 1) {
+					blueMidPos = new Vector3 (blueEndPos.x + .26f, blueEndPos.y, blueEndPos.z);
+				} else if (blueFace == 2) {
+					blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z - .26f);
+				} else if (blueFace == 3) {
+					blueMidPos = new Vector3 (blueEndPos.x - .26f, blueEndPos.y, blueEndPos.z);
+				}
+
+			} else if (dir == 2) {
+				
+				if (blueFace == 0) {
+					blueMidPos = new Vector3 (blueEndPos.x + .26f, blueEndPos.y, blueEndPos.z);
+				} else if (blueFace == 1) {
+					blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z - .26f);
+				} else if (blueFace == 2) {
+					blueMidPos = new Vector3 (blueEndPos.x - .26f, blueEndPos.y, blueEndPos.z);
+				} else if (blueFace == 3) {
+					blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z + .26f);
+				}
+
+			} else if (dir == 3) {
+				
+				if (blueFace == 0) {
+					blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z - .26f);
+				} else if (blueFace == 1) {
+					blueMidPos = new Vector3 (blueEndPos.x - .26f, blueEndPos.y, blueEndPos.z);
+				} else if (blueFace == 2) {
+					blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z + .26f);
+				} else if (blueFace == 3) {
+					blueMidPos = new Vector3 (blueEndPos.x + .26f, blueEndPos.y, blueEndPos.z);
+				}
+
+			} else if (dir == 4) {
+				
+				if (blueFace == 0) {
+					blueMidPos = new Vector3 (blueEndPos.x - .26f, blueEndPos.y, blueEndPos.z);
+				} else if (blueFace == 1) {
+					blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z + .26f);
+				} else if (blueFace == 2) {
+					blueMidPos = new Vector3 (blueEndPos.x + .26f, blueEndPos.y, blueEndPos.z);
+				} else if (blueFace == 3) {
+					blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z - .26f);
+				}
+
+			}
+
+			blueGhost.transform.DOMove (blueMidPos, .5f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle);
+		}
+
 	}
 
 	void PinkShellAppear () {
@@ -757,12 +1156,14 @@ public class TurnManagerScript : NetworkBehaviour {
 			pinkGhost.transform.position = origPos;
 			pinkGhost.transform.eulerAngles = origRot;
 			pinkShell.SetActive (false);
+			myGhostScript.PreviewModeOff ();
 		}
 
 		if (networkNum == "2") {
 			blueGhost.transform.position = origPos;
 			blueGhost.transform.eulerAngles = origRot;
 			blueShell.SetActive (false);
+			myGhostScript.PreviewModeOff ();
 		}
 			
 	}
@@ -861,7 +1262,8 @@ public class TurnManagerScript : NetworkBehaviour {
 	//Finished placing moves
 	public void TurnDone () {
 
-		source.PlayOneShot (doneSound, .3f);
+		source.Stop ();
+		source.PlayOneShot (doneSound, .31f);
 
 		GameObject[] empties = GameObject.FindGameObjectsWithTag ("Empty");
 
@@ -872,6 +1274,16 @@ public class TurnManagerScript : NetworkBehaviour {
 			}
 		
 		}
+
+		if (timerGo == true) {
+		
+			timerGo = false;
+			timerOutline.fillAmount = 0;
+			timerText.text = "-";
+		
+		}
+
+
 			
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 
@@ -882,7 +1294,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			buttonPanel.MoveDown ();
 			preview = false;
 			BackToOriginalPosition ();
-			myGhostScript.PreviewModeOff ();
+
 			RestartLineRender ();
 
 		} else if (wheelPhase == true && triggers.Length == 0) {
@@ -891,12 +1303,19 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		}
 
+		if (networkNum == "2" && receivedIcons == false) {
+			CmdHurryBuddy ("1");
+		} else if (networkNum == "1" && receivedIcons == false){
+			CmdHurryBuddy ("2");
+		}
+
 		if (networkNum == "2" && otherPlayerReady == true) {
 
 			SendArray ();
 
 		} else if (networkNum == "2" && otherPlayerReady == false) {
 
+			//CmdHurryBuddy ("1");
 			InvokeRepeating ("WaitingForOtherPlayer", 1.0f, 1.0f);
 
 		} else if (networkNum == "1" && bluePlayerThere == true && otherPlayerReady == true) {
@@ -905,6 +1324,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		} else if (networkNum == "1" && bluePlayerThere == true && otherPlayerReady == false) {
 
+			//CmdHurryBuddy ("2");
 			InvokeRepeating ("WaitingForOtherPlayer", 1.0f, 1.0f);
 
 		} else if (networkNum == "1" && bluePlayerThere == false) {
@@ -912,6 +1332,21 @@ public class TurnManagerScript : NetworkBehaviour {
 			InvokeRepeating ("LookingForBlue", 1.0f, 1.0f);
 
 		}
+	}
+
+	[Command]
+	public void CmdHurryBuddy(string playerNumTime){
+	
+		Debug.Log ("THIS: " + playerNumTime);
+		RpcHurryBuddy (playerNumTime);
+
+	}
+
+	[ClientRpc]
+	public void RpcHurryBuddy(string playerNumTime){
+
+		GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ().StartTimer (playerNumTime);
+
 	}
 
 	void LookingForBlue () {
@@ -1163,8 +1598,6 @@ public class TurnManagerScript : NetworkBehaviour {
 					newGear.transform.SetSiblingIndex (i + sibDex);
 					sibDex = sibDex + 1;
 
-
-
 				}
 
 			}
@@ -1204,7 +1637,6 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	void BeginNewTurn () {
-		//Debug.Log ("winningbool: " + winning);
 
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 		int triggerCount = triggers.Length;
@@ -1214,12 +1646,15 @@ public class TurnManagerScript : NetworkBehaviour {
 			Destroy (triggers[i]);
 		}
 
+		timerTurn = 60.0f;
+		timerTurnGo = true;
 
 		if (wheelPhase == true) {
 			wheelPhase = false;
-			if (turnsLeft > 0) {
+			if (pointsTotal < 100) {
 				deleteNull.SetActive (false);
 				buttonPanel.MoveUp ();
+				camerRot.CameraRotate (myGhost);
 				preview = true;
 				RecordPosition ();
 				myGhostScript.PreviewModeOn ();
@@ -1249,52 +1684,185 @@ public class TurnManagerScript : NetworkBehaviour {
 			iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 			iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
 
-			turnsLeft = turnsLeft - 1.0f;
+			pointsTotal = pointsTotal + turnPoints;
+			CheckStarHit ();
 
-			MoveTurnBar ();
+			MoveTurnBar (turnPoints);
 
 			//timerCircle.fillAmount = (turnsLeft / totalTurns);
 		
 			wheelPhase = true;
-			if (turnsLeft > 0) {
+			if (pointsTotal < 100 && winning == false) {
 				wheelPanel.MoveUp ();
+				camerRot.CameraRotate (theirGhost);
+
 			}
-			if (turnsLeft == 0 && winning == false) {
+			if (pointsTotal > 99 && winning == false) {
 
 				loseScreen.SetActive (true);
 
 			}
 
 			if (winning == true) {
-				winScreen.SetActive (true);
+				ActivateWin ();
 			}
-
-
+				
 		}
 			
 		ClearArray ();
 
 		//Debug.Log ("turnsLeft: " + turnsLeft + "totalTurns: " + totalTurns + " fillAmount " + (turnsLeft / totalTurns));
 
-
-
-
 		TellOtherPlayerReady ();
 	}
 
-	void MoveTurnBar(){
+	void ActivateWin (){
+
+
+
+		Vector3 northWest = GameObject.FindGameObjectWithTag ("North West").transform.position;
+		//Vector3 southEast = GameObject.FindGameObjectWithTag ("South East").transform.position;
+
+		float pinkToN = Vector3.Distance (northWest, pinkGhost.transform.position);
+		//float pinkToS = Vector3.Distance (southEast, pinkGhost.transform.position);
+		float blueToN = Vector3.Distance (northWest, blueGhost.transform.position);
+		//float blueToS = Vector3.Distance (southEast, blueGhost.transform.position);
+
+//		if (Mathf.Abs((pinkGhost.transform.position.z - Mathf.RoundToInt(pinkGhost.transform.position.z))) > .15f){
+//			
+//		if (pinkToN > blueToN) {
+//				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 180, blueGhost.transform.eulerAngles.z);
+//				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 0, pinkGhost.transform.eulerAngles.z);
+//				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
+//				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
+//
+//		} else {
+//				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 0, blueGhost.transform.eulerAngles.z);
+//				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 180, pinkGhost.transform.eulerAngles.z);
+//				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
+//				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
+//			}
+//		}
+//
+//		else {
+//
+//		if (pinkToN > blueToN) {
+//				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 90, blueGhost.transform.eulerAngles.z);
+//				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 270, pinkGhost.transform.eulerAngles.z);
+//				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
+//				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
+//		} else {
+//				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 270, blueGhost.transform.eulerAngles.z);
+//				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 90, pinkGhost.transform.eulerAngles.z);
+//				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
+//				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
+//			}
+//				
+//		}
+
+		Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 0, blueGhost.transform.eulerAngles.z);
+		Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 180, pinkGhost.transform.eulerAngles.z);
+		blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
+		pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
+
+		pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+		pinkGhost.transform.DOMove (pinkMidPos, .6f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle);
+		blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z + .26f);
+		blueGhost.transform.DOMove (blueMidPos, .6f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle);
+
+
+		Invoke ("Hug", 2.0f);
+
+		if (goldHit == false) {
+			camerRot.starColor = 1;
+			return;
+		} else if (silverHit == false) {
+			camerRot.starColor = 2;
+			return;
+		} else if (bronzeHit == false) {
+			camerRot.starColor = 3;
+			return;
+		}
+	
+	}
+
+	void Hug () {
+
+		blueScript.HugAnimation ();
+		pinkScript.HugAnimation ();
+		camerRot.EndGameRotion ();
+	
+	}
+
+	public void MoveTurnBar(float pointsTaken){
 
 		if (moveLeft == true) {
-			return;
+
+			moveLeft = false;
+			barRect.anchoredPosition = nextTurnPos;
+
 		}
 			
 		float xPos;
-		xPos = barRect.anchoredPosition.x + ((startBarPosX + barRectEnd.anchoredPosition.x)/totalTurns);
 
+		xPos = barRect.anchoredPosition.x + ((barRectEnd.anchoredPosition.x - startBarPosX)*(pointsTaken/100.0f));
+	
 		nextTurnPos = new Vector2 (xPos ,barRect.anchoredPosition.y);
 
 		moveLeft = true;
 
+	}
+
+	void PlaceStars(){
+
+		float goldRatio = starGoldPoint / 100;
+		float xPos;
+		xPos = startPoint.anchoredPosition.x + ((Mathf.Abs(startPoint.anchoredPosition.x - endPoint.anchoredPosition.x))*goldRatio); // -700
+		Vector2 goldPos = new Vector2 (xPos, starGold.anchoredPosition.y);
+		starGold.anchoredPosition = goldPos;
+
+		float silverRatio = starSilverPoint / 100;
+		xPos = startPoint.anchoredPosition.x + ((Mathf.Abs(startPoint.anchoredPosition.x - endPoint.anchoredPosition.x))*silverRatio); // -700
+		Vector2 silverPos = new Vector2 (xPos, starSilver.anchoredPosition.y);
+		starSilver.anchoredPosition = silverPos;
+
+		float bronzeRatio = starBronzePoint / 100;
+		xPos = startPoint.anchoredPosition.x + ((Mathf.Abs(startPoint.anchoredPosition.x - endPoint.anchoredPosition.x))*bronzeRatio); // -700
+		Vector2 bronzePos = new Vector2 (xPos, starBronze.anchoredPosition.y);
+		starBronze.anchoredPosition = bronzePos;
+
+	}
+
+	public void TakeHit(float pointsAdded){
+	
+		pointsTotal = pointsTotal + pointsAdded;
+		CheckStarHit ();
+
+		if (pointsTotal > 99) {
+			LoseGame ();
+		}
+	
+	}
+
+	void CheckStarHit () {
+		
+		if (goldHit == false) {
+			if (starGoldPoint < pointsTotal) {
+				starGold.gameObject.SetActive (false);
+				goldHit = true;
+			}
+		} else if (silverHit == false) {
+			if (starSilverPoint < pointsTotal) {
+				starSilver.gameObject.SetActive (false);
+				silverHit = true;
+			}
+
+		} else if (bronzeHit == false) {
+			if (starBronzePoint < pointsTotal) {
+				starBronze.gameObject.SetActive (false);
+				bronzeHit = true;
+			}
+		}
 	}
 
 	public void Delete(){
@@ -1316,6 +1884,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		if (wheelPhase == true) {
 		
 			wheelPanel.MoveUp ();
+			camerRot.CameraRotate (theirGhost);
 
 		} else {
 		

@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: e03e59435e6504ddfa33d41e937de7c7
+timeCreated: 1490973826
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Samba
+  fontNames:
+  - Samba
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

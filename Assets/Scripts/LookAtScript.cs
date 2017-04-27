@@ -19,5 +19,6 @@ public class LookAtScript : MonoBehaviour {
 	void Update () {
 
 		transform.rotation = target.transform.rotation;
+
 	}
 }

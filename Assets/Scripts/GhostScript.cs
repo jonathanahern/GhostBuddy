@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class GhostScript : MonoBehaviour {
 
@@ -13,14 +14,30 @@ public class GhostScript : MonoBehaviour {
 	public Text speechText;
 
 	public MeshRenderer body;
-	public MeshRenderer leftArm;
-	public MeshRenderer rightArm;
-	public MeshRenderer head;
+	public MeshRenderer heart;
+	public MeshRenderer heartRing;
+	public Material previewMaterial;
+	public Material solidMaterial;
+
+	public MeshRenderer[] bodyParts;
+//	public MeshRenderer leftArm;
+//	public MeshRenderer rightArm;
+//	public MeshRenderer head;
 	public LineRenderer lineRend;
 
 	private bool previewTime;
 	public AudioClip wallHit;
 	private AudioSource source;
+
+	public GameObject walk;
+	public GameObject blink;
+	Animator blinkAnimation;
+	public SpriteRenderer blinker;
+	Color eyeColor;
+	Color heartColor;
+	Color heartRingColor;
+
+	public GameObject detectors;
 
 
 	// Use this for initialization
@@ -28,31 +45,87 @@ public class GhostScript : MonoBehaviour {
 		
 		Invoke ("FindManager", 2.0f);
 		source = GetComponent<AudioSource>();
+		blinkAnimation = blink.GetComponent<Animator> ();
+		InvokeRepeating("BlinkAnimation", 3.0f, 17.0f);
 		
 	}
 
 	void Update (){
 
 		if (Input.GetKeyDown(KeyCode.P)){
-			HitWallSound();
+			BlinkAnimation();
 		}
 	
+		if (Input.GetKeyDown(KeyCode.O)){
+			previewTime = true;
+		}
+
 		if (previewTime == true) {
 
 			float alpha = (Mathf.PingPong(Time.time * .5f, .5f)) + .15f;
 
-			Color colorGoal = new Color (body.material.color.r,
-										body.material.color.g,
-				                		 body.material.color.b,
+			Color colorGoal = new Color (body.sharedMaterial.color.r,
+				body.sharedMaterial.color.g,
+				body.sharedMaterial.color.b,
 				                 		alpha);
 
-			body.material.color = colorGoal;
-			leftArm.material.color = colorGoal;
-			rightArm.material.color = colorGoal;
-			head.material.color = colorGoal;
+			body.sharedMaterial.color = colorGoal;
+
+			eyeColor = new Color (blinker.color.r, blinker.color.g, blinker.color.b, alpha);
+			blinker.color = eyeColor;
+
+			heartColor = new Color (heart.material.color.r, heart.material.color.g, heart.material.color.b, alpha);
+			heart.material.color = heartColor;
+
+			heartRingColor = new Color (heartRing.material.color.r, heartRing.material.color.g, heartRing.material.color.b, alpha);
+			heart.material.color = heartRingColor;
+
+
+//			body.material.color = colorGoal;
+//			leftArm.material.color = colorGoal;
+//			rightArm.material.color = colorGoal;
+//			head.material.color = colorGoal;
 		}
 	
 	
+	}
+
+	public void DetectorsOn(){
+	
+		detectors.SetActive (true);
+	
+	}
+
+	public void BlinkAnimation(){
+
+		blinkAnimation.Play ("Blink");
+
+	}
+
+	public void HugAnimation(){
+
+		walk.GetComponent<Animator>().Play ("Hug");
+
+	}
+
+
+
+	public void WalkAnimation(){
+	
+		walk.GetComponent<Animator> ().Play ("Right Shoulder");
+	
+	}
+
+	public void WobbleAnimation(){
+
+		walk.GetComponent<Animator> ().Play ("Wobble");
+
+	}
+
+	public void StopAnimation(){
+
+		walk.GetComponent<Animator> ().Play("Idle");
+
 	}
 		
 
@@ -65,16 +138,24 @@ public class GhostScript : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other) {
 
-		if (other.tag == "Slime") {
-
-			Debug.Log ("SLIMED");
-
-			turnManager.LoseGame ();
-			turnManager.gameLost = true;
-			turnManager.forwardBlueGhost = false;
-			turnManager.forwardPinkGhost = false;
-
+		if (turnManager == null) {
+			return;
 		}
+
+		if (turnManager.preview == true) {
+			return;
+		}
+
+//		if (other.tag == "Slime") {
+//
+//			Debug.Log ("SLIMED");
+//
+//			turnManager.LoseGame ();
+//			turnManager.gameLost = true;
+//			turnManager.forwardBlueGhost = false;
+//			turnManager.forwardPinkGhost = false;
+//
+//		}
 
 
 		if (other.tag == "Player") {
@@ -83,19 +164,28 @@ public class GhostScript : MonoBehaviour {
 		
 		}
 		
-		if (other.tag == "Wall") {
-			
+		if (other.tag == "Wall" && turnManager.winning == false) {
+
+			HitWallSound ();
+
+
 			if (gameObject.name == "Pink Ghost(Clone)") {
-				
-				turnManager.forwardPinkGhost = false;
+
+				DOTween.Kill ("PinkForward", false);
+				StopAnimation ();
+				//turnManager.forwardPinkGhost = false;
 				turnManager.backPinkGhost = true;
+				turnManager.CorrectPink ();
 
 			}
 
 			if (gameObject.name == "Blue Ghost(Clone)") {
 
-				turnManager.forwardBlueGhost = false;
+				DOTween.Kill ("BlueForward", false);
+				StopAnimation ();
+				//turnManager.forwardBlueGhost = false;
 				turnManager.backBlueGhost = true;
+				turnManager.CorrectBlue ();
 
 			}
 
@@ -106,35 +196,45 @@ public class GhostScript : MonoBehaviour {
 				triggers [triggerCount - 1].GetComponent<TriggerScript> ().hitWall = true;
 				turnManager.DeletePoint ();
 			
+			} else {
+
+				turnManager.MoveTurnBar (5.0f);
+				turnManager.TakeHit (5.0f);
+
 			}
-
-			HitWallSound ();
-
 
 		}
 
-		if (other.tag == "Hidden Wall" && turnManager.preview == false) {
+		if (other.tag == "Hidden Wall" && turnManager.preview == false && turnManager.winning == false) {
 
 			if (gameObject.name == "Pink Ghost(Clone)") {
 
+				DOTween.Kill ("PinkForward", false);
+				StopAnimation ();
 				turnManager.forwardPinkGhost = false;
 				turnManager.backPinkGhost = true;
+				turnManager.CorrectPink ();
 
 			}
 
 			if (gameObject.name == "Blue Ghost(Clone)") {
 
-				turnManager.forwardBlueGhost = false;
+				DOTween.Kill ("BlueForward", false);
+				StopAnimation ();
+				//turnManager.forwardBlueGhost = false;
 				turnManager.backBlueGhost = true;
+				turnManager.CorrectBlue ();
 
 			}
 
 			HitWallSound ();
+			turnManager.MoveTurnBar (5.0f);
+			turnManager.TakeHit (5.0f);
 			other.GetComponent<HiddenWallScript> ().SwitchMat ();
 
 		}
 
-		if (other.tag == "Border" && turnManager.preview == false) {
+		if (other.tag == "Border" && turnManager.preview == false && turnManager.winning == false) {
 
 			if (gameObject.name == "Pink Ghost(Clone)") {
 				turnManager.gameLost = true;
@@ -178,6 +278,7 @@ public class GhostScript : MonoBehaviour {
 		speechText.text = speech;
 		speechBubble.SetActive (true);
 		Invoke ("HideBubble", 3.5f);
+
 	}
 
 	void HideBubble(){
@@ -202,6 +303,14 @@ public class GhostScript : MonoBehaviour {
 //		body.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 //		leftArm.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 //		rightArm.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+		foreach (MeshRenderer bodyPart in bodyParts) {
+
+			bodyPart.material = previewMaterial;
+
+		}
+			
+
 		previewTime = true;
 	
 	}
@@ -210,15 +319,32 @@ public class GhostScript : MonoBehaviour {
 
 		previewTime = false;
 
-		Color colorGoal = new Color (body.material.color.r,
-			body.material.color.g,
-			body.material.color.b,
+
+		foreach (MeshRenderer bodyPart in bodyParts) {
+
+			bodyPart.material = solidMaterial;
+
+		}
+
+		eyeColor = new Color (blinker.color.r, blinker.color.g, blinker.color.b, 1.0f);
+		blinker.color = eyeColor;
+
+		heartColor = new Color (heart.material.color.r, heart.material.color.g, heart.material.color.b, 1.0f);
+		heart.material.color = heartColor;
+
+		heartRingColor = new Color (heartRing.material.color.r, heartRing.material.color.g, heartRing.material.color.b, 1.0f);
+		heart.material.color = heartRingColor;
+
+
+		Color colorGoal = new Color (body.sharedMaterial.color.r,
+			body.sharedMaterial.color.g,
+			body.sharedMaterial.color.b,
 			1.0f);
 
-		body.material.color = colorGoal;
-		head.material.color = colorGoal;
-		leftArm.material.color = colorGoal;
-		rightArm.material.color = colorGoal;
+		body.sharedMaterial.color = colorGoal;
+//		head.material.color = colorGoal;
+//		leftArm.material.color = colorGoal;
+//		rightArm.material.color = colorGoal;
 
 
 	}

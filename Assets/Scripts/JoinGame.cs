@@ -18,6 +18,7 @@ public class JoinGame : MonoBehaviour {
 	private Transform roomListParent;
 
 	private NetworkManager networkManager;
+	private string currentLevelName;
 
 	// Use this for initialization
 	void Start () {
@@ -102,5 +103,31 @@ public class JoinGame : MonoBehaviour {
 		ClearRoomList ();
 		status.text = "Joining...";
 	
+	}
+
+	public void JoinOrCreateRoom (string levelName){
+
+		ClearRoomList ();
+		networkManager.matchMaker.ListMatches (0, 20, levelName, true, 0, 0, OnMatchList);
+		currentLevelName = levelName;
+		Invoke ("NextStepJoinOrCreate", 2.0f);
+
+
+	}
+
+	void NextStepJoinOrCreate () {
+		
+		int childCount = roomListParent.childCount;
+
+		if (childCount < 1) {
+
+			networkManager.matchMaker.CreateMatch (currentLevelName, 2, true, "", "", "", 0, 0, networkManager.OnMatchCreate);
+
+		} else {
+
+			roomListParent.GetChild (0).GetComponent<RoomListItem> ().JoinRoom ();
+
+		}
+
 	}
 }

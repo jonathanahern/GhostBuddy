@@ -46,8 +46,8 @@ public class TitleScreenBackground : MonoBehaviour {
 		green = new Color (0.0f, .286f, .235f, 1.0f);
 		pink = new Color (.99f, .56f, .556f, 1.0f);
 		purple = new Color (.4f, .255f, .51f, 1.0f);
-		black = new Color (0.0f, 0.0f, 0.0f, 1.0f);
-		white = new Color (1.0f, 1.0f, 1.0f, 1.0f);
+//		black = new Color (0.0f, 0.0f, 0.0f, 1.0f);
+//		white = new Color (1.0f, 1.0f, 1.0f, 1.0f);
 
 		colorList.Add (pink);
 		colorList.Add (green);
@@ -60,13 +60,13 @@ public class TitleScreenBackground : MonoBehaviour {
 //		colorGoal = colorOne;
 
 		background = GetComponent<MeshRenderer> ();
-		background.sharedMaterial.SetColor ("_TopColor", white);
-		background.sharedMaterial.SetColor ("_MidColor", black);
-		background.sharedMaterial.SetColor ("_BottomColor", white);
+		background.sharedMaterial.SetColor ("_TopColor", pink);
+		background.sharedMaterial.SetColor ("_MidColor", purple);
+		background.sharedMaterial.SetColor ("_BottomColor", blue);
 
-		lastColorOne = white;
-		lastColorTwo = black;
-		lastColorThree = white;
+		lastColorOne = pink;
+		lastColorTwo = purple;
+		lastColorThree = blue;
 
 		InvokeRepeating ("ChangeTopColor", 2.0f, 12.0f);
 		InvokeRepeating ("ChangeMidColor", 6.0f, 12.0f);
@@ -141,8 +141,8 @@ public class TitleScreenBackground : MonoBehaviour {
 		colorList.Add (green);
 		colorList.Add (purple);
 		colorList.Add (blue);
-		colorList.Add (black);
-		colorList.Add (white);
+//		colorList.Add (black);
+//		colorList.Add (white);
 
 	}
 

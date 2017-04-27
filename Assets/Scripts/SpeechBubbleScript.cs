@@ -110,18 +110,18 @@ public class SpeechBubbleScript : MonoBehaviour {
 		
 		bubbleList.Clear ();
 
-		bubbleList.Add ("Hey");
-		bubbleList.Add ("Zzzzzz");
-		bubbleList.Add ("Nice");
-		bubbleList.Add ("Do not compute");
-		bubbleList.Add ("My bad");
-		bubbleList.Add ("Ugh");
-		bubbleList.Add ("Beep Boop");
-		bubbleList.Add ("Let's try again");
-		bubbleList.Add ("Human error");
-		bubbleList.Add ("Cool it");
-		bubbleList.Add ("Whoops");
-		bubbleList.Add ("Pretty");
+		bubbleList.Add ("Mulb");
+		bubbleList.Add ("Belnut");
+		bubbleList.Add ("Oot Gup");
+		bubbleList.Add ("Flusbus");
+		bubbleList.Add ("Cansut");
+		bubbleList.Add ("Bornoot");
+		bubbleList.Add ("Happersnoot");
+		bubbleList.Add ("Ronmoo");
+		bubbleList.Add ("Xerrit");
+		bubbleList.Add ("Linner");
+		bubbleList.Add ("Zannerz");
+		bubbleList.Add ("Oonueat");
 
 	}
 }
