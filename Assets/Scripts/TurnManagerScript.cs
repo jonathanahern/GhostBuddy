@@ -251,7 +251,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		pinkEndPos = pinkGhost.transform.position;
 		blueEndPos = blueGhost.transform.position;
 
-		camerRot.CameraRotate (theirGhost);
+		Invoke("DelayedStart", 2.0f);
 
 		ghosts [0] = blueGhost;
 		ghosts [1] = pinkGhost;
@@ -262,6 +262,12 @@ public class TurnManagerScript : NetworkBehaviour {
 		}
 
 		PlaceStars ();
+
+	}
+
+	void DelayedStart(){
+
+		camerRot.CameraRotate (theirGhost);
 
 	}
 

@@ -124,7 +124,7 @@ public class GhostScript : MonoBehaviour {
 
 	public void StopAnimation(){
 
-		walk.GetComponent<Animator> ().Play("Idle");
+		walk.GetComponent<Animator> ().SetTrigger ("Stop");
 
 	}
 		
