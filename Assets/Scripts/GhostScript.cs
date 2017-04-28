@@ -78,7 +78,7 @@ public class GhostScript : MonoBehaviour {
 			heart.material.color = heartColor;
 
 			heartRingColor = new Color (heartRing.material.color.r, heartRing.material.color.g, heartRing.material.color.b, alpha);
-			heart.material.color = heartRingColor;
+			heartRing.material.color = heartRingColor;
 
 
 //			body.material.color = colorGoal;
@@ -333,7 +333,7 @@ public class GhostScript : MonoBehaviour {
 		heart.material.color = heartColor;
 
 		heartRingColor = new Color (heartRing.material.color.r, heartRing.material.color.g, heartRing.material.color.b, 1.0f);
-		heart.material.color = heartRingColor;
+		heartRing.material.color = heartRingColor;
 
 
 		Color colorGoal = new Color (body.sharedMaterial.color.r,
