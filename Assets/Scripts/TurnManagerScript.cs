@@ -37,8 +37,6 @@ public class TurnManagerScript : NetworkBehaviour {
 	private Vector3 blueBackOnePos;
 	Vector3 blueMidPos;
 	Vector3 pinkMidPos;
-	Vector3 blueCurPos;
-	Vector3 pinkCurPos;
 
 	public GameObject speechPanel;
 
@@ -523,12 +521,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		buttonCushion = false;
 
 	}
-
-	void SaveSpots(){
-		pinkCurPos = pinkGhost.transform.position;
-		blueCurPos = blueGhost.transform.position;
-
-	}
+		
 
 	public void PlaceForwardGhost(){
 
@@ -685,8 +678,6 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void ForwardPink () {
 
-		SaveSpots ();
-
 //		if (winning == true) {
 //			pinkStartPos = new Vector3 ((pinkGhost.transform.position.x + blueGhost.transform.position.x) / 2, blueGhost.transform.position.y, (pinkGhost.transform.position.z + blueGhost.transform.position.z) / 2);
 //			pinkEndPos = pinkStartPos - pinkGhost.transform.forward;
@@ -744,8 +735,6 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void RotateRightPink () {
 
-		SaveSpots ();
-
 		if (preview == false) {
 			source2.pitch = Random.Range (pitchMin, pitchMax);
 			source2.PlayOneShot (rightTurn, .2f);
@@ -765,8 +754,6 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void RotateLeftPink () {
-
-		SaveSpots ();
 
 		if (preview == false) {
 			source2.pitch = Random.Range (pitchMin, pitchMax);
@@ -798,8 +785,6 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void ForwardBlue () {
-
-		SaveSpots ();
 
 //		if (winning == true) {
 //			blueStartPos = new Vector3 ((pinkGhost.transform.position.x + blueGhost.transform.position.x) / 2, blueGhost.transform.position.y, (pinkGhost.transform.position.z + blueGhost.transform.position.z) / 2);
@@ -865,8 +850,6 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void RotateRightBlue () {
 
-		SaveSpots ();
-
 		if (preview == false) {
 			source2.pitch = Random.Range (pitchMin, pitchMax);
 			source2.PlayOneShot (rightTurn, .2f);
@@ -884,8 +867,6 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void RotateLeftBlue () {
-
-		SaveSpots ();
 
 		if (preview == false) {
 			source2.pitch = Random.Range (pitchMin, pitchMax);
