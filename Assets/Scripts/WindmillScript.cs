@@ -12,9 +12,9 @@ public class WindmillScript : MonoBehaviour {
 	private bool rotateGhostOne = false;
 	private bool rotateGhostTwo = false;
 	private float startAngle;
-	private float endAngle;
+//	private float endAngle;
 	private float startAngle2;
-	private float endAngle2;
+//	private float endAngle2;
 
 	public GameObject GhostBoxA1;
 	public GameObject GhostBoxA2;
@@ -23,10 +23,16 @@ public class WindmillScript : MonoBehaviour {
 
 	public GameObject ghostOne;
 	public GameObject ghostTwo;
+	public GameObject[] players = new GameObject[2];
+	public GameObject tester;
+
 
 	public bool ghostOneInside = false;
+	TurnManagerScript turnMan;
+	GameObject robotBuddy;
 
 	void Start () {
+
 
 		rotationDirection = new Vector3 (0, 1 * direction, 0);
 
@@ -58,7 +64,7 @@ public class WindmillScript : MonoBehaviour {
 
 			ghostOne.transform.RotateAround (gameObject.transform.position, rotationDirection, rotateSpeed * Time.deltaTime);
 		
-			if (ghostOne.transform.eulerAngles.y < endAngle && direction == -1) {
+			if (ghostOne.transform.eulerAngles.y < 0 && direction == -1) {
 
 				rotateGhostOne = false;
 				float newXPos = (Mathf.Round (ghostOne.transform.position.x * 2)) / 2;
@@ -71,7 +77,7 @@ public class WindmillScript : MonoBehaviour {
 				ghostOne.transform.eulerAngles = newAngle;
 			}
 
-			if (ghostOne.transform.eulerAngles.y > endAngle && direction == 1) {
+			if (ghostOne.transform.eulerAngles.y > 0 && direction == 1) {
 
 				rotateGhostOne = false;
 				float newXPos = (Mathf.Round (ghostOne.transform.position.x * 2)) / 2;
@@ -89,7 +95,7 @@ public class WindmillScript : MonoBehaviour {
 
 			ghostTwo.transform.RotateAround (gameObject.transform.position, rotationDirection, rotateSpeed * Time.deltaTime);
 
-			if (ghostTwo.transform.eulerAngles.y < endAngle2 && direction == -1) {
+			if (ghostTwo.transform.eulerAngles.y < 0 && direction == -1) {
 
 				rotateGhostTwo = false;
 				float newXPos = (Mathf.Round (ghostTwo.transform.position.x * 2)) / 2;
@@ -102,7 +108,7 @@ public class WindmillScript : MonoBehaviour {
 				ghostTwo.transform.eulerAngles = newAngle;
 			}
 
-			if (ghostTwo.transform.eulerAngles.y > endAngle2 && direction == 1) {
+			if (ghostTwo.transform.eulerAngles.y > 0 && direction == 1) {
 
 				rotateGhostTwo = false;
 				float newXPos = (Mathf.Round (ghostTwo.transform.position.x * 2)) / 2;
@@ -121,6 +127,42 @@ public class WindmillScript : MonoBehaviour {
 		
 	public void RotateWindmill()
 	{
+
+		if (turnMan == null) {
+		
+			turnMan = GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript> ();
+			players = GameObject.FindGameObjectsWithTag ("Player");
+
+		}
+
+//		if (turnMan.winning == true) {
+//
+//			if (ghostOne != null || ghostTwo != null) {
+//				Debug.Log (ghostOne.name + "in the rotato");
+//
+//				for (int i = 0; i < players.Length; i++) {
+//
+//					if (players [i] != ghostOne && ghostTwo == null) {
+//					
+//						players[i] = ghostTwo;
+//						players[i].transform.parent = gameObject.transform;
+//
+//					
+//					}
+//
+//				}
+//
+//			//	players [0].transform.SetParent (players [1].transform, true);
+//			//	Invoke ("UnhookBots", 1.0f);
+//
+//
+//			}
+//
+//		}
+
+
+
+
 		if (ghostOne != null) {
 			RotateGhostOne ();
 		}
@@ -130,12 +172,72 @@ public class WindmillScript : MonoBehaviour {
 		}
 		
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(gameObject, rotation2, 1.5f));
+		StartCoroutine(RotateObject(gameObject, rotation2, 1.0f));
+	}
+
+
+	public void AddGhost (GameObject ghost){
+	
+		Debug.Log (" square32");
+
+		if (ghostTwo == null) {
+			Debug.Log (" square323");
+			ghostTwo = ghost;
+		
+		} else if (ghostOne == null) {
+			Debug.Log (" square3233");
+			ghostOne = ghost;
+
+		}
+	
+	}
+
+	public void GhostJumped (GameObject ghost) {
+
+//		Debug.Log ("JUMPED1st" + ghost.name);
+
+//		Debug.Log("it worked:" + ghostOne.name + ghostTwo.name);
+
+//		turnMan.winning = false;
+
+//		if (ghostOne == null || ghostTwo == null) {
+//			Debug.Log ("GREY NULL HAPPENED");
+//			return;
+//		}
+
+		//Debug.Log ("JUMPED" + ghost.name);
+
+
+//		ghost.transform.parent = null;
+
+//		if (ghost == ghostOne) {
+//
+//			ghostOne.transform.parent = null;
+//
+//		} else {
+//
+//			ghostTwo.transform.parent = null;
+//
+//		}
+
+		if (ghost == ghostOne) {
+			Debug.Log ("JUMPED" + ghost.name);
+			ghostOne = null;
+		
+		}
+
+		if (ghost == ghostTwo) {
+			Debug.Log ("JUMPED" + ghost.name);
+			ghostTwo = null;
+		
+		}
+
 	}
 
 	void RotateGhostOne () {
 
 		ghostOne.transform.parent = gameObject.transform;
+
 
 //		startAngle = ghostOne.transform.eulerAngles.y;
 //		if (startAngle == 0 && direction == -1) {

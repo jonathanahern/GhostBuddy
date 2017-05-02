@@ -39,6 +39,9 @@ public class GhostScript : MonoBehaviour {
 
 	public GameObject detectors;
 
+	public bool inWindMill = false;
+	public GameObject myWindMill;
+
 
 	// Use this for initialization
 	void Start () {
@@ -158,13 +161,16 @@ public class GhostScript : MonoBehaviour {
 //		}
 
 
-		if (other.tag == "Player") {
-		
-			turnManager.winning = true;
-		
-		}
+//		if (other.tag == "Player") {
+//		
+//			turnManager.winning = true;
+//		
+//		}
 		
 		if (other.tag == "Wall" && turnManager.winning == false) {
+
+			if (inWindMill == true)
+				return;
 
 			HitWallSound ();
 
@@ -207,11 +213,17 @@ public class GhostScript : MonoBehaviour {
 
 		if (other.tag == "Hidden Wall" && turnManager.preview == false && turnManager.winning == false) {
 
+			if (inWindMill == true) {
+				return;
+			}
+
+			Debug.Log ("Hit hidden wall" + inWindMill + gameObject.name);
+
 			if (gameObject.name == "Pink Ghost(Clone)") {
 
 				DOTween.Kill ("PinkForward", false);
 				StopAnimation ();
-				turnManager.forwardPinkGhost = false;
+				//turnManager.forwardPinkGhost = false;
 				turnManager.backPinkGhost = true;
 				turnManager.CorrectPink ();
 
@@ -236,10 +248,13 @@ public class GhostScript : MonoBehaviour {
 
 		if (other.tag == "Border" && turnManager.preview == false && turnManager.winning == false) {
 
+			//Debug.Log ("Loser");
+
 			if (gameObject.name == "Pink Ghost(Clone)") {
 				turnManager.gameLost = true;
 				turnManager.LoseGame ();
 				turnManager.forwardPinkGhost = false;
+				GetComponent<Rigidbody> ().isKinematic = false;
 				GetComponent<Rigidbody> ().useGravity = true;
 
 			}
@@ -248,26 +263,27 @@ public class GhostScript : MonoBehaviour {
 				turnManager.gameLost = true;
 				turnManager.LoseGame ();
 				turnManager.forwardBlueGhost = false;
+				GetComponent<Rigidbody> ().isKinematic = false;
 				GetComponent<Rigidbody> ().useGravity = true;
 			}
 		}
 
 	}
 
-	void OnTriggerExit (Collider other)
-	{
-
-		if (other.tag == "Player") {
-
-			turnManager.winning = false;
-
-		}
-
-	}
+//	void OnTriggerExit (Collider other)
+//	{
+//
+//		if (other.tag == "Player") {
+//
+//			turnManager.winning = false;
+//
+//		}
+//
+//	}
 
 	void HitWallSound(){
 	
-		Debug.Log ("hitWall");
+		//Debug.Log ("hitWall");
 		float vol = Random.Range (.6f, .75f);
 		source.PlayOneShot(wallHit,vol);
 	

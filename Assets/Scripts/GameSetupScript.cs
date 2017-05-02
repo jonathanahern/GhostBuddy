@@ -8,15 +8,18 @@ public class GameSetupScript : NetworkBehaviour {
 
 	public GameObject eventSystem;
 	public Color pink;
+	public Color lightPink;
 	public Color blue;
+	public Color lightBlue;
 
 	//public GameObject doneButton;
 	//public GameObject deleteButton;
 	public GameObject turnBar;
-	public Image colorBarButtons;
-	public Image colorBarButtons2;
+//	public Image colorBarOne;
+//	public Image colorBarTwo;
 	public Image colorBarWheelOne;
 	public Image colorBarWheelTwo;
+	public Image colorWheel;
 
 
 	public bool bluePlayerHere = false;
@@ -103,8 +106,9 @@ public class GameSetupScript : NetworkBehaviour {
 //		doneButton.GetComponent<Image>().color = pink;
 //		deleteButton.GetComponent<Image>().color = pink;
 		turnBar.GetComponent<Image>().color = pink;
-		colorBarButtons.color = pink;
-		colorBarButtons2.color = pink;
+//		colorBarOne.color = blue;
+//		colorBarTwo.color = blue;
+		colorWheel.color = lightBlue;
 		colorBarWheelOne.color = pink;
 		colorBarWheelTwo.color = pink;
 
@@ -124,8 +128,9 @@ public class GameSetupScript : NetworkBehaviour {
 //		doneButton.GetComponent<Image>().color = blue;
 //		deleteButton.GetComponent<Image>().color = blue;
 		turnBar.GetComponent<Image>().color = blue;
-		colorBarButtons.color = blue;
-		colorBarButtons2.color = blue;
+//		colorBarOne.color = pink;
+//		colorBarTwo.color = pink;
+		colorWheel.color = lightPink;
 		colorBarWheelOne.color = blue;
 		colorBarWheelTwo.color = blue;
 

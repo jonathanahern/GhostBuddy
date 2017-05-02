@@ -10,7 +10,7 @@ public class ColorButtonScript : MonoBehaviour {
 
 	public int tabCount = 0;
 
-	public int[] wedge = {95,95,95};
+	public int[] wedge = {96,96,96};
 
 	private Color pink;
 	private Color blue;
@@ -18,12 +18,15 @@ public class ColorButtonScript : MonoBehaviour {
 	private Color black;
 	private Color purple;
 	private Color white;
+	public Color grey;
 
 	private Color[] colorList = new Color[99];
 
 	public TurnManagerScript turnManager;
+	public WheelPanelScript wheelPan;
 	AudioSource source;
 	public AudioClip buzz;
+	public AudioClip bonk;
 
 
 	void Start () {
@@ -39,13 +42,21 @@ public class ColorButtonScript : MonoBehaviour {
 
 		//pink90,green91,purple92,blue93,black94,white95
 
+		wedge [0] = 96;
+		wedge [1] = 96;
+		wedge [2] = 96;
+
+		firstTab.color = grey;
+		secondTab.color = grey;
+		thirdTab.color = grey;
+
 		colorList [90] = pink;
 		colorList [91] = green;
 		colorList [92] = purple;
 		colorList [93] = blue;
 		colorList [94] = black;
 		colorList [95] = white;
-
+		colorList [96] = grey;
 
 	}
 
@@ -70,6 +81,10 @@ public class ColorButtonScript : MonoBehaviour {
 			wedge [0] = 92;
 			return;
 		} else if (firstTab.color == purple) {
+			firstTab.color = white;
+			wedge [0] = 95;
+			return;
+		} else if (firstTab.color == grey) {
 			firstTab.color = white;
 			wedge [0] = 95;
 			return;
@@ -101,6 +116,10 @@ public class ColorButtonScript : MonoBehaviour {
 			secondTab.color = white;
 			wedge [1] = 95;
 			return;
+		} else if (secondTab.color == grey) {
+			secondTab.color = white;
+			wedge [1] = 95;
+			return;
 		}
 
 	}
@@ -126,6 +145,10 @@ public class ColorButtonScript : MonoBehaviour {
 			wedge [2] = 92;
 			return;
 		} else if (thirdTab.color == purple) {
+			thirdTab.color = white;
+			wedge [2] = 95;
+			return;
+		} else if (thirdTab.color == grey) {
 			thirdTab.color = white;
 			wedge [2] = 95;
 			return;
@@ -299,20 +322,37 @@ public class ColorButtonScript : MonoBehaviour {
 	}
 
 	public void	BackToWhite(){
-		
+
+		Debug.Log ("wedges: " + wedge [0] + wedge [1] + wedge [2]);
+
+		if (wedge [0] == 96 || wedge [1] == 96 || wedge [2] == 96) {
+			source.PlayOneShot (bonk, .15f);
+			return;
+		}
+
 		SendWheelToTurnManager ();
 
-
-		Color newColor = new Color (1.0f, 1.0f, 1.0f, 1.0f);
-		firstTab.color = newColor;
-		secondTab.color = newColor;
-		thirdTab.color = newColor;
 
 	}
 
 	public void SendWheelToTurnManager () {
 
-		turnManager.colorArray = wedge; 
+		//Debug.Log ("Colors sent");
+		turnManager.colorArray = wedge;
+		turnManager.PlaceWheelIcon ();
+		wheelPan.MoveDown ();
+
+		firstTab.color = grey;
+		secondTab.color = grey;
+		thirdTab.color = grey;
 	
+	}
+
+	public void BackToGrey(){
+
+		wedge [0] = 96;
+		wedge [1] = 96;
+		wedge [2] = 96;
+
 	}
 }

@@ -8,6 +8,8 @@ using DG.Tweening;
 
 public class TurnManagerScript : NetworkBehaviour {
 
+	private float actTime;
+
 	public GameObject pinkGhost;
 	public GameObject blueGhost;
 	private GhostScript myGhostScript;
@@ -103,7 +105,9 @@ public class TurnManagerScript : NetworkBehaviour {
 	public bool receivedIcons = false;
 	public bool doneWithBubble = false;
 	public bool preview = false;
-	public GameObject readyToSeeSign;
+	GameObject readyToSeeSign;
+	public GameObject pinkPlay;
+	public GameObject bluePlay;
 	public GameObject loseScreen;
 	public GameObject winScreen;
 
@@ -179,7 +183,11 @@ public class TurnManagerScript : NetworkBehaviour {
 	private int idOne = 0;
 	private int idTwo = 0;
 
+//	GameObject[] gears;
+
 	public override void OnStartLocalPlayer() {
+
+		actTime = 1.0f;
 
 		timerText.text = "-";
 		timerStart = timer;
@@ -238,16 +246,27 @@ public class TurnManagerScript : NetworkBehaviour {
 			myGhostScript = pinkGhost.GetComponent<GhostScript> ();
 			myGhost = pinkGhost;
 			theirGhost = blueGhost;
+			readyToSeeSign = pinkPlay;
 		}
 
 		if (networkNum == "2") {
 			myGhostScript = blueGhost.GetComponent<GhostScript> ();
 			myGhost = blueGhost;
 			theirGhost = pinkGhost;
+			readyToSeeSign = bluePlay;
 		}
+
+//		gears = GameObject.FindGameObjectsWithTag ("Gear Item");
+//		foreach (GameObject gear in gears) {
+//		
+//			gear.GetComponent<WindmillScript> ().pinkGhost = pinkGhost;
+//			gear.GetComponent<WindmillScript> ().blueGhost = blueGhost;
+//		
+//		}
 
 		pinkEndPos = pinkGhost.transform.position;
 		blueEndPos = blueGhost.transform.position;
+	//	Debug.Log ("b1"  + blueEndPos);
 
 		Invoke("DelayedStart", 2.0f);
 
@@ -271,12 +290,12 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	void Update (){
 //
-		if (Input.GetKeyDown(KeyCode.I)) {
-		
-			//source2.PlayOneShot (leftTurn, .2f);
-			StartTimer ("1");
-
-		}
+//		if (Input.GetKeyDown(KeyCode.I)) {
+//		
+//			//source2.PlayOneShot (leftTurn, .2f);
+//			StartTimer ("1");
+//
+//		}
 //
 //		if (Input.GetKeyDown(KeyCode.O)) {
 //
@@ -310,22 +329,32 @@ public class TurnManagerScript : NetworkBehaviour {
 			
 			}
 
-
-
 			if (timer < .1) {
 				timerGo = false;
 				timerOutline.fillAmount = 0;
 				timerText.text = "-";
-				Debug.Log ("timer done");
+				//Debug.Log ("timer done");
 				if (wheelPhase == false) {
 				
 					TurnDone ();
 
 				} else {
+
+					if (colorBut.wedge [0] == 96) {
+						colorBut.wedge [0] = 95;
+					}
+
+					if (colorBut.wedge [1] == 96) {
+						colorBut.wedge [1] = 95;
+					}
+
+					if (colorBut.wedge [2] == 96) {
+						colorBut.wedge [2] = 95;
+					}
 				
-					wheelPanel.MoveDown ();
+					//wheelPanel.MoveDown ();
 					colorBut.BackToWhite ();
-					PlaceWheelIcon ();
+					//PlaceWheelIcon ();
 				
 				}
 			}
@@ -462,7 +491,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void StartTimer (string playerNumTime){
 	
-		Debug.Log ("starttime");
+		//Debug.Log ("starttime");
 
 		source.PlayOneShot (allDone, .1f);
 
@@ -472,7 +501,7 @@ public class TurnManagerScript : NetworkBehaviour {
 			timeAmt = (timerTurn / 60.0f) * 15;
 			timer = timeAmt + 10;
 			timerStart = timeAmt + 10;
-			Debug.Log ("starttimeinside" + timer);
+			//Debug.Log ("starttimeinside" + timer);
 
 			//Invoke ("PlayTimerSound", timeAmt + 5.0f);
 
@@ -497,6 +526,8 @@ public class TurnManagerScript : NetworkBehaviour {
 			timerText.text = "-";
 
 		}
+
+
 
 		if (networkNum == "1") {
 
@@ -536,7 +567,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
 		buttonCushion = true;
-		Invoke ("ButtonCushion", 1.0f);
+		Invoke ("ButtonCushion", 1.1f);
 
 		if (networkNum == "1") {
 	
@@ -573,7 +604,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
 		buttonCushion = true;
-		Invoke ("ButtonCushion", .6f);
+		Invoke ("ButtonCushion", 1.1f);
 
 		if (networkNum == "1") {
 
@@ -611,7 +642,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
 		buttonCushion = true;
-		Invoke ("ButtonCushion", .6f);
+		Invoke ("ButtonCushion", 1.1f);
 
 		if (networkNum == "1") {
 
@@ -636,7 +667,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void PlaceNapIcon() {
 
-		Debug.Log ("NAP: " + iconsLeft);
+		//.Log ("NAP: " + iconsLeft);
 
 		if (iconsLeft < 1 || buttonCushion == true) {
 			return;
@@ -650,7 +681,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		iconsLeftSquare.fillAmount = (iconsLeft / iconsToStart);
 		iconsLeftSquare2.fillAmount = (iconsLeft / iconsToStart);
 		buttonCushion = true;
-		Invoke ("ButtonCushion", .6f);
+		Invoke ("ButtonCushion", .2f);
 
 		if (networkNum == "1") {
 
@@ -675,25 +706,36 @@ public class TurnManagerScript : NetworkBehaviour {
 		Destroy (empty);
 	}
 		
-
 	public void ForwardPink () {
 
-//		if (winning == true) {
-//			pinkStartPos = new Vector3 ((pinkGhost.transform.position.x + blueGhost.transform.position.x) / 2, blueGhost.transform.position.y, (pinkGhost.transform.position.z + blueGhost.transform.position.z) / 2);
-//			pinkEndPos = pinkStartPos - pinkGhost.transform.forward;
-//			pinkGhost.transform.DOJump (pinkEndPos, 1.0f, 0, 1.0f, false).SetEase(Ease.OutBounce).OnComplete (PinkGoIdle).SetId ("PinkForward");
-//			pinkScript.WalkAnimation ();
-//			Invoke ("BackToNormal", .9f);
-//			blueGhost.transform.DOMove (pinkStartPos, .5f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle).SetId ("BlueForward");
-//			blueScript.WalkAnimation ();
-//			return;
-//		}
+		if (winning == true) {
+			winning = false;
+			pinkStartPos = new Vector3 ((pinkGhost.transform.position.x + blueGhost.transform.position.x) / 2, blueGhost.transform.position.y, (pinkGhost.transform.position.z + blueGhost.transform.position.z) / 2);
+			pinkEndPos = pinkStartPos - pinkGhost.transform.forward;
+			pinkGhost.transform.DOJump (pinkEndPos, 1.0f, 0, 1.0f, false).SetEase(Ease.OutBounce).OnComplete (PinkGoIdle).SetId ("PinkForward");
+			pinkScript.WalkAnimation ();
+			Invoke ("BackToNormal", .8f);
+			blueGhost.transform.DOMove (pinkStartPos, .5f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle).SetId ("BlueForward");
+			blueScript.WalkAnimation ();
+
+			if (pinkScript.inWindMill == true) {
+				pinkScript.myWindMill.GetComponent<WindmillScript> ().GhostJumped (pinkGhost);
+				pinkGhost.transform.parent = null;
+				pinkScript.inWindMill = false;
+				pinkScript.myWindMill = null;
+
+
+			}
+				
+
+			return;
+		}
 
 
 		pinkStartPos = pinkGhost.transform.position;
 		pinkEndPos = pinkGhost.transform.position - pinkGhost.transform.forward;
 		//forwardPinkGhost = true;
-		pinkGhost.transform.DOMove (pinkEndPos, .9f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle).SetId ("PinkForward");
+		pinkGhost.transform.DOMove (pinkEndPos, actTime).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle).SetId ("PinkForward");
 		pinkScript.WalkAnimation ();
 
 		if (winning == false){
@@ -728,7 +770,10 @@ public class TurnManagerScript : NetworkBehaviour {
 		}
 		pinkStartPos = pinkGhost.transform.position;
 		pinkBackOnePos = pinkGhost.transform.position + pinkGhost.transform.forward;
-		backwardPinkGhost = true;
+		pinkScript.WalkAnimation ();
+		pinkGhost.transform.DOMove (pinkBackOnePos, actTime/1.5f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle).SetId ("PinkForward");
+
+		//backwardPinkGhost = true;
 		DeletePoint ();
 
 	}
@@ -746,7 +791,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		Invoke ("PinkGoIdle", 0.95f);
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(pinkGhost, rotation2, 1.0f));
+		StartCoroutine(RotateObject(pinkGhost, rotation2, actTime));
 		if (winning == false){
 			StraightenGhost ();
 		}
@@ -765,7 +810,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		Invoke ("PinkGoIdle", 0.95f);
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(pinkGhost, rotation2, 1.0f));
+		StartCoroutine(RotateObject(pinkGhost, rotation2, actTime));
 		if (winning == false){
 			StraightenGhost ();
 		}
@@ -786,20 +831,33 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void ForwardBlue () {
 
-//		if (winning == true) {
-//			blueStartPos = new Vector3 ((pinkGhost.transform.position.x + blueGhost.transform.position.x) / 2, blueGhost.transform.position.y, (pinkGhost.transform.position.z + blueGhost.transform.position.z) / 2);
-//			blueEndPos = blueStartPos - blueGhost.transform.forward;
-//			blueGhost.transform.DOJump (blueEndPos, 1.0f, 0, 1.0f, false).SetEase(Ease.OutBounce).OnComplete (BlueGoIdle).SetId ("BlueForward");
-//			blueScript.WalkAnimation ();
-//			Invoke ("BackToNormal", .9f);
-//			pinkGhost.transform.DOMove (blueStartPos, .5f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle).SetId ("PinkForward");
-//			pinkScript.WalkAnimation ();
-//			return;
-//		}
+		if (winning == true) {
+			winning = false;
+			blueStartPos = new Vector3 ((pinkGhost.transform.position.x + blueGhost.transform.position.x) / 2, blueGhost.transform.position.y, (pinkGhost.transform.position.z + blueGhost.transform.position.z) / 2);
+			blueEndPos = blueStartPos - blueGhost.transform.forward;
+			//Debug.Log ("b2"  + blueEndPos);
+			blueGhost.transform.DOJump (blueEndPos, 1.0f, 0, 1.0f, false).SetEase(Ease.OutBounce).OnComplete (BlueGoIdle).SetId ("BlueForward");
+			blueScript.WalkAnimation ();
+			Invoke ("BackToNormal", .8f);
+			pinkGhost.transform.DOMove (blueStartPos, .5f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle).SetId ("PinkForward");
+			pinkScript.WalkAnimation ();
+			if (blueScript.inWindMill == true) {
+				blueScript.myWindMill.GetComponent<WindmillScript> ().GhostJumped (blueGhost);
+				blueGhost.transform.parent = null;
+				blueScript.inWindMill = false;
+				blueScript.myWindMill = null;
+
+
+			}
+				
+			return;
+		}
 
 		blueStartPos = blueGhost.transform.position;
+
 		blueEndPos = blueGhost.transform.position - blueGhost.transform.forward;
-		blueGhost.transform.DOMove (blueEndPos, .9f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle).SetId ("BlueForward");
+		//Debug.Log ("b3"  + blueEndPos);
+		blueGhost.transform.DOMove (blueEndPos, actTime).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle).SetId ("BlueForward");
 		//forwardBlueGhost = true;
 		blueScript.WalkAnimation ();
 		if (winning == false){
@@ -821,18 +879,25 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	public void CorrectBlue (){
-
+		
 		blueEndPos = blueStartPos;
+		//Debug.Log ("b4" + blueEndPos);
 	}
 
 	void BackToNormal (){
 
-		winning = false;
 		pinkGhost.GetComponent<CapsuleCollider> ().enabled = true;
 		blueGhost.GetComponent<CapsuleCollider> ().enabled = true;
 		pinkScript.detectors.SetActive (true);
 		blueScript.detectors.SetActive (true);
 
+		GameObject[] detectors = GameObject.FindGameObjectsWithTag ("Detector");
+
+		foreach (GameObject detector in detectors) {
+		
+			detector.GetComponent<DetectorScript> ().alreadyHit = false;
+		
+		}
 
 	}
 
@@ -843,7 +908,10 @@ public class TurnManagerScript : NetworkBehaviour {
 		}
 		blueStartPos = blueGhost.transform.position;
 		blueBackOnePos = blueGhost.transform.position + blueGhost.transform.forward;
-		backwardBlueGhost = true;
+		blueScript.WalkAnimation ();
+		blueGhost.transform.DOMove (blueBackOnePos, actTime/1.5f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle).SetId ("BlueForward");
+
+		//backwardBlueGhost = true;
 		DeletePoint ();
 
 	}
@@ -857,10 +925,10 @@ public class TurnManagerScript : NetworkBehaviour {
 		direction = 1;
 
 		blueScript.WobbleAnimation ();
-		Invoke ("BlueGoIdle", 0.95f);
+		Invoke ("BlueGoIdle", actTime - .05f);
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(blueGhost, rotation2, 1.0f));
+		StartCoroutine(RotateObject(blueGhost, rotation2, actTime));
 		if (winning == false){
 			StraightenGhost ();
 		}
@@ -875,10 +943,10 @@ public class TurnManagerScript : NetworkBehaviour {
 		direction = -1;
 
 		blueScript.WobbleAnimation ();
-		Invoke ("BlueGoIdle", 0.95f);
+		Invoke ("BlueGoIdle", actTime - .05f);
 
 		Quaternion rotation2 = Quaternion.Euler(new Vector3(0, 90 * direction, 0));
-		StartCoroutine(RotateObject(blueGhost, rotation2, 1.0f));
+		StartCoroutine(RotateObject(blueGhost, rotation2, actTime));
 		if (winning == false){
 			StraightenGhost ();
 		}
@@ -910,11 +978,11 @@ public class TurnManagerScript : NetworkBehaviour {
 			return;
 		}
 
-		Invoke ("ResetIds", 1.2f);
+		Invoke ("ResetIds", .8f);
 
-		Debug.Log (dir + "InSameSquare" + id);
-		Debug.Log ("Pink:" + pinkEndPos);
-		Debug.Log ("Blue:" + blueEndPos);
+		//Debug.Log (dir + "InSameSquare" + id + Time.time);
+		//Debug.Log ("Pink:" + pinkEndPos);
+		//Debug.Log ("Blue:" + blueEndPos);
 		winning = true;
 		pinkGhost.GetComponent<CapsuleCollider> ().enabled = false;
 		blueGhost.GetComponent<CapsuleCollider> ().enabled = false;
@@ -928,55 +996,62 @@ public class TurnManagerScript : NetworkBehaviour {
 			if (dir == 1) {
 				
 				if (pinkFace == 0) {
-					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .26f);
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .21f);
 				} else if (pinkFace == 1) {
-					pinkMidPos = new Vector3 (pinkEndPos.x + .26f, pinkEndPos.y, pinkEndPos.z);
+					pinkMidPos = new Vector3 (pinkEndPos.x + .21f, pinkEndPos.y, pinkEndPos.z);
 				} else if (pinkFace == 2) {
-					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .21f);
 				} else if (pinkFace == 3) {
-					pinkMidPos = new Vector3 (pinkEndPos.x - .26f, pinkEndPos.y, pinkEndPos.z);
+					pinkMidPos = new Vector3 (pinkEndPos.x - .21f, pinkEndPos.y, pinkEndPos.z);
 				}
 					
 			} else if (dir == 2) {
 
 				if (pinkFace == 0) {
-					pinkMidPos = new Vector3 (pinkEndPos.x + .26f, pinkEndPos.y, pinkEndPos.z);
+					pinkMidPos = new Vector3 (pinkEndPos.x + .21f, pinkEndPos.y, pinkEndPos.z);
 				} else if (pinkFace == 1) {
-					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .21f);
 				} else if (pinkFace == 2) {
-					pinkMidPos = new Vector3 (pinkEndPos.x - .26f, pinkEndPos.y, pinkEndPos.z);
+					pinkMidPos = new Vector3 (pinkEndPos.x - .21f, pinkEndPos.y, pinkEndPos.z);
 				} else if (pinkFace == 3) {
-					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .26f);
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .21f);
 				}
 					
 			} else if (dir == 3) {
 				
 				if (pinkFace == 0) {
-					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .21f);
 				} else if (pinkFace == 1) {
-					pinkMidPos = new Vector3 (pinkEndPos.x - .26f, pinkEndPos.y, pinkEndPos.z);
+					pinkMidPos = new Vector3 (pinkEndPos.x - .21f, pinkEndPos.y, pinkEndPos.z);
 				} else if (pinkFace == 2) {
-					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .26f);
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .21f);
 				} else if (pinkFace == 3) {
-					pinkMidPos = new Vector3 (pinkEndPos.x + .26f, pinkEndPos.y, pinkEndPos.z);
+					pinkMidPos = new Vector3 (pinkEndPos.x + .21f, pinkEndPos.y, pinkEndPos.z);
 				}
 
 			} else if (dir == 4) {
 				
 				if (pinkFace == 0) {
-					pinkMidPos = new Vector3 (pinkEndPos.x - .26f, pinkEndPos.y, pinkEndPos.z);
+					pinkMidPos = new Vector3 (pinkEndPos.x - .21f, pinkEndPos.y, pinkEndPos.z);
 				} else if (pinkFace == 1) {
-					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .26f);
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z + .21f);
 				} else if (pinkFace == 2) {
-					pinkMidPos = new Vector3 (pinkEndPos.x + .26f, pinkEndPos.y, pinkEndPos.z);
+					pinkMidPos = new Vector3 (pinkEndPos.x + .21f, pinkEndPos.y, pinkEndPos.z);
 				} else if (pinkFace == 3) {
-					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+					pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .21f);
 				}
 
 			}
-
+			//Debug.Log ("square1");
 			pinkGhost.transform.DOMove (pinkMidPos, .5f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle);
+			if (blueScript.inWindMill == true) {
+				//Debug.Log (blueScript.myWindMill.name + " square");
+				pinkScript.myWindMill = blueScript.myWindMill;
+				pinkScript.inWindMill = true;
+				//pinkGhost.transform.parent = blueScript.myWindMill.transform;
+				blueScript.myWindMill.GetComponent<WindmillScript> ().AddGhost (pinkGhost);
 
+			}
 		}
 
 		if (id == 2) {
@@ -1036,6 +1111,16 @@ public class TurnManagerScript : NetworkBehaviour {
 			}
 
 			blueGhost.transform.DOMove (blueMidPos, .5f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle);
+			if (pinkScript.inWindMill == true) {
+			
+				blueScript.myWindMill = pinkScript.myWindMill;
+				blueScript.inWindMill = true;
+				//blueGhost.transform.parent = pinkScript.myWindMill.transform;
+				pinkScript.myWindMill.GetComponent<WindmillScript> ().AddGhost (blueGhost);
+			
+			}
+
+
 		}
 
 	}
@@ -1078,7 +1163,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	public void DeletePoint (){
 
-		Debug.Log ("DeletePoint");
+		//Debug.Log ("DeletePoint");
 
 		if (networkNum == "2") {
 			bluePoints--;
@@ -1141,6 +1226,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		if (networkNum == "1") {
 			pinkGhost.transform.position = origPos;
+			pinkEndPos = origPos;
 			pinkGhost.transform.eulerAngles = origRot;
 			pinkShell.SetActive (false);
 			myGhostScript.PreviewModeOff ();
@@ -1148,6 +1234,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		if (networkNum == "2") {
 			blueGhost.transform.position = origPos;
+			blueEndPos = origPos;
 			blueGhost.transform.eulerAngles = origRot;
 			blueShell.SetActive (false);
 			myGhostScript.PreviewModeOff ();
@@ -1205,6 +1292,10 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	void PlayCombinedIcons () {
 
+		//Debug.Log ("PinkC:" + pinkEndPos);
+		//Debug.Log ("BlueC:" + blueEndPos);
+
+
 		GameObject[] triggersPlusNull = GameObject.FindGameObjectsWithTag ("Trigger");
 
 		for (int i = 0; i < triggersPlusNull.Length; i++) {
@@ -1219,7 +1310,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		float seconds = 0;
 
 		for (int i = 0; i < triggers.Length; i++) {
-			seconds = seconds + 1.9f;
+			seconds = seconds + actTime + 1.5f;
 			scrollList.transform.GetChild(i).gameObject.GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
 			if (i == triggers.Length - 1) {
 			
@@ -1252,15 +1343,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		source.Stop ();
 		source.PlayOneShot (doneSound, .31f);
 
-		GameObject[] empties = GameObject.FindGameObjectsWithTag ("Empty");
 
-		if (empties.Length > 0) {
-		
-			for (int i = 0; i < empties.Length; i++) {
-				Destroy (empties [i]);
-			}
-		
-		}
 
 		if (timerGo == true) {
 		
@@ -1277,10 +1360,13 @@ public class TurnManagerScript : NetworkBehaviour {
 		waitScreen.SetActive (true);
 
 		if (wheelPhase == false) {
-		
+
+			myGhostScript.StopAnimation ();
 			buttonPanel.MoveDown ();
 			preview = false;
-			BackToOriginalPosition ();
+			DOTween.Kill ("PinkForward", false);
+			DOTween.Kill ("BlueForward", false);
+			Invoke ("BackToOriginalPosition", .5f);
 
 			RestartLineRender ();
 
@@ -1295,6 +1381,17 @@ public class TurnManagerScript : NetworkBehaviour {
 		} else if (networkNum == "1" && receivedIcons == false){
 			CmdHurryBuddy ("2");
 		}
+
+		GameObject[] empties = GameObject.FindGameObjectsWithTag ("Empty");
+
+		if (empties.Length > 0) {
+
+			for (int i = 0; i < empties.Length; i++) {
+				Destroy (empties [i]);
+			}
+
+		}
+
 
 		if (networkNum == "2" && otherPlayerReady == true) {
 
@@ -1324,7 +1421,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	[Command]
 	public void CmdHurryBuddy(string playerNumTime){
 	
-		Debug.Log ("THIS: " + playerNumTime);
+		//Debug.Log ("THIS: " + playerNumTime);
 		RpcHurryBuddy (playerNumTime);
 
 	}
@@ -1358,7 +1455,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	void SendArray () {
 
-		Debug.Log ("Send Array Happened");
+	//	Debug.Log ("Send Array Happened");
 
 		if (receivedIcons == false) {
 		
@@ -1387,7 +1484,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 			if (networkNum == "1") {
 				RpcPinkSendColorArray (colorArray);
-				Debug.Log ("Send Array1: " + triggerCount);
+				//Debug.Log ("Send Array1: " + triggerCount);
 				RpcPinkSendArray (fromPinkGhost);
 			}
 		}
@@ -1405,7 +1502,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 			if (i == triggerCount - 1 && networkNum == "1") {
 				RpcPinkSendColorArray (colorArray);
-				Debug.Log ("Send Array2: " + triggerCount);
+				//Debug.Log ("Send Array2: " + triggerCount);
 				//Sends the array the other self on server
 				RpcPinkSendArray (fromPinkGhost);
 
@@ -1428,7 +1525,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	//Turns the blue int array into prefab array (blueGhostIcon)
 	public void FillPinkArray () {
 
-		Debug.Log ("FillPinkArray");
+		//Debug.Log ("FillPinkArray");
 
 		receivedIcons = true;
 
@@ -1638,6 +1735,9 @@ public class TurnManagerScript : NetworkBehaviour {
 
 		if (wheelPhase == true) {
 			wheelPhase = false;
+			pinkEndPos = pinkGhost.transform.position;
+			blueEndPos = blueGhost.transform.position;
+			//Debug.Log ("b5" + blueEndPos);
 			if (pointsTotal < 100) {
 				deleteNull.SetActive (false);
 				buttonPanel.MoveUp ();
@@ -1661,6 +1761,8 @@ public class TurnManagerScript : NetworkBehaviour {
 			{
 				colorArray[i] = 95;
 			}
+
+			colorBut.BackToGrey ();
 				
 		} else {
 
@@ -1715,50 +1817,54 @@ public class TurnManagerScript : NetworkBehaviour {
 		float blueToN = Vector3.Distance (northWest, blueGhost.transform.position);
 		//float blueToS = Vector3.Distance (southEast, blueGhost.transform.position);
 
-//		if (Mathf.Abs((pinkGhost.transform.position.z - Mathf.RoundToInt(pinkGhost.transform.position.z))) > .15f){
-//			
-//		if (pinkToN > blueToN) {
-//				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 180, blueGhost.transform.eulerAngles.z);
-//				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 0, pinkGhost.transform.eulerAngles.z);
-//				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
-//				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
-//
-//		} else {
-//				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 0, blueGhost.transform.eulerAngles.z);
-//				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 180, pinkGhost.transform.eulerAngles.z);
-//				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
-//				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
-//			}
-//		}
-//
-//		else {
-//
-//		if (pinkToN > blueToN) {
-//				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 90, blueGhost.transform.eulerAngles.z);
-//				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 270, pinkGhost.transform.eulerAngles.z);
-//				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
-//				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
-//		} else {
-//				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 270, blueGhost.transform.eulerAngles.z);
-//				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 90, pinkGhost.transform.eulerAngles.z);
-//				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
-//				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
-//			}
-//				
-//		}
+		pinkScript.WobbleAnimation ();
+		blueScript.WobbleAnimation ();
 
-		Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 0, blueGhost.transform.eulerAngles.z);
-		Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 180, pinkGhost.transform.eulerAngles.z);
-		blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc);
-		pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc);
+		if (Mathf.Abs((pinkGhost.transform.position.z - Mathf.RoundToInt(pinkGhost.transform.position.z))) > .1f){
+			
+		if (pinkToN > blueToN) {
+				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 180, blueGhost.transform.eulerAngles.z);
+				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 0, pinkGhost.transform.eulerAngles.z);
+				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (BlueGoIdle);
+				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (PinkGoIdle);
 
-		pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
-		pinkGhost.transform.DOMove (pinkMidPos, .6f).SetEase (Ease.InOutSine).OnComplete (PinkGoIdle);
-		blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z + .26f);
-		blueGhost.transform.DOMove (blueMidPos, .6f).SetEase (Ease.InOutSine).OnComplete (BlueGoIdle);
+		} else {
+				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 0, blueGhost.transform.eulerAngles.z);
+				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 180, pinkGhost.transform.eulerAngles.z);
+				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (BlueGoIdle);
+				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (PinkGoIdle);
+			}
+		}
+
+		else {
+
+		if (pinkToN > blueToN) {
+				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 90, blueGhost.transform.eulerAngles.z);
+				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 270, pinkGhost.transform.eulerAngles.z);
+				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (BlueGoIdle);
+				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (PinkGoIdle);
+		} else {
+				Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 270, blueGhost.transform.eulerAngles.z);
+				Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 90, pinkGhost.transform.eulerAngles.z);
+				blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (BlueGoIdle);
+				pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (PinkGoIdle);
+			}
+				
+		}
 
 
-		Invoke ("Hug", 2.0f);
+//		Vector3 blueAngle = new Vector3 (blueGhost.transform.eulerAngles.x, 0, blueGhost.transform.eulerAngles.z);
+//		Vector3 pinkAngle = new Vector3 (pinkGhost.transform.eulerAngles.x, 180, pinkGhost.transform.eulerAngles.z);
+//		blueGhost.transform.DORotate (blueAngle, 2.0f).SetEase (Ease.OutCirc).OnComplete (BlueGoIdle);
+//		pinkGhost.transform.DORotate (pinkAngle, 2.0f).SetEase(Ease.OutCirc).OnComplete (PinkGoIdle);
+
+//		pinkMidPos = new Vector3 (pinkEndPos.x, pinkEndPos.y, pinkEndPos.z - .26f);
+//		pinkGhost.transform.DOMove (pinkMidPos, 1.6f).SetEase (Ease.InOutSine);
+//		blueMidPos = new Vector3 (blueEndPos.x, blueEndPos.y, blueEndPos.z + .26f);
+//		blueGhost.transform.DOMove (blueMidPos, 1.6f).SetEase (Ease.InOutSine);
+
+
+		Invoke ("Hug", 2.3f);
 
 		if (goldHit == false) {
 			camerRot.starColor = 1;
@@ -1774,11 +1880,9 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	void Hug () {
-
 		blueScript.HugAnimation ();
 		pinkScript.HugAnimation ();
 		camerRot.EndGameRotion ();
-	
 	}
 
 	public void MoveTurnBar(float pointsTaken){
@@ -1884,7 +1988,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		GameObject empty = Instantiate (emptyPrefab, new Vector3 (0, 0, 0), Quaternion.identity);
 		empty.transform.SetParent (scrollList.transform, false);
 		buttonCushion = true;
-		Invoke ("ButtonCushion", .6f);
+		Invoke ("ButtonCushion", 1.1f);
 
 	}
 
@@ -1932,7 +2036,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	[ClientRpc]
 	public void RpcPinkSendArray (int[] pinkArray){
 		//fromBlueGhost = blueArray;
-		Debug.Log ("RpcPinkSendArray: " + networkNum);
+		//Debug.Log ("RpcPinkSendArray: " + networkNum);
 		if (networkNum != "1") {
 			GameObject localGameManager = GameObject.FindWithTag ("Game Manager Local");
 			localGameManager.GetComponent<TurnManagerScript> ().fromPinkGhost = pinkArray;
@@ -1955,7 +2059,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	public void RpcPinkSendColorArray (int[] pinkColorArray){
 		//fromBlueGhost = blueArray;
 
-		Debug.Log ("RpcPinkSendColorArray: " + networkNum);
+		//Debug.Log ("RpcPinkSendColorArray: " + networkNum);
 
 		if (networkNum != "1") {
 
@@ -2006,7 +2110,7 @@ public class TurnManagerScript : NetworkBehaviour {
 
 	void TellOtherPlayerReady () {
 	
-		Debug.Log ("told them i'm ready");
+	//	Debug.Log ("told them i'm ready");
 
 		if (networkNum == "1") {
 			RpcTellOtherPlayerReady ();
@@ -2070,14 +2174,14 @@ public class TurnManagerScript : NetworkBehaviour {
 	public void CmdSendBubble(string phrase, string ghostNum) {
 	
 		GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript>().RpcSendBubble (phrase, ghostNum);
-		Debug.Log ("Got to CMD bubble: " + phrase + ghostNum);
+		//Debug.Log ("Got to CMD bubble: " + phrase + ghostNum);
 
 	}
 
 	[ClientRpc]
 	public void RpcSendBubble(string phrase, string ghostNum) {
 
-		Debug.Log ("Got to RPC bubble: " + phrase + ghostNum);
+		//Debug.Log ("Got to RPC bubble: " + phrase + ghostNum);
 
 		Invoke ("BubblesDone", 4.5f);
 

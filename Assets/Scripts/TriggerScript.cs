@@ -19,14 +19,13 @@ public class TriggerScript : MonoBehaviour {
 	public bool hitWall;
 
 	private TurnManagerScript gameManager;
-	private GameObject glow;
+	public GameObject glow;
 	private bool timerbool;
 	private float timer;
 
 	// Use this for initialization
 	void Start () {
 		gameManager = GameObject.FindGameObjectWithTag ("Game Manager Local").GetComponent<TurnManagerScript>();
-		glow = transform.GetChild (0).gameObject;
 
 		
 	}
@@ -35,7 +34,7 @@ public class TriggerScript : MonoBehaviour {
 
 		if (timerbool == true) {
 			timer += Time.deltaTime;
-			if (timer > 1.5f) {
+			if (timer > 1.1f) {
 			
 				timerbool = false;
 				timer = 0;

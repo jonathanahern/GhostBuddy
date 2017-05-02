@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 169022909c1cd4bcab601b7478565b1d
-timeCreated: 1493395435
+guid: 5c99ba474fe5c4de3b8aa9f2346f6732
+timeCreated: 1493505699
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -9,7 +9,7 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: millWall
+    4300000: windWall
     9500000: //RootNode
   materials:
     importMaterials: 1

@@ -61,13 +61,13 @@ public class DetectorScript : MonoBehaviour {
 			alreadyHit = true;
 			turnMan.InSameSquare (id, dir);
 			parent.SetActive (false);
-			//Invoke ("HitBack", 0.35f);
+//			Invoke ("HitBack", 0.35f);
 		
 		}
 	
 	}
 
-	void HitBack (){
+	public void HitBack (){
 	
 		alreadyHit = false;
 
