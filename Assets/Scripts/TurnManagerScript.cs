@@ -993,6 +993,10 @@ public class TurnManagerScript : NetworkBehaviour {
 			pinkScript.WobbleAnimation ();
 			int pinkFace = Mathf.RoundToInt(pinkGhost.transform.eulerAngles.y/90);
 
+			if (pinkScript.inWindMill == true) {
+				pinkEndPos = blueEndPos;
+			}
+
 			if (dir == 1) {
 				
 				if (pinkFace == 0) {
@@ -1059,6 +1063,10 @@ public class TurnManagerScript : NetworkBehaviour {
 			blueScript.StopAnimation ();
 			blueScript.WobbleAnimation ();
 			int blueFace = Mathf.RoundToInt(blueGhost.transform.eulerAngles.y/90);
+
+			if (blueScript.inWindMill == true) {
+				blueEndPos = pinkEndPos;
+			}
 
 			if (dir == 1) {
 				
@@ -1255,40 +1263,6 @@ public class TurnManagerScript : NetworkBehaviour {
 		}
 
 	}
-		
-//	public void PlaybackButton () {
-//
-//		if (networkNum == "1") {
-//			origPos = pinkGhost.transform.position;
-//			origRot = pinkGhost.transform.eulerAngles;
-//			GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
-//			int triggerCount = triggers.Length;
-//			float seconds = 0;
-//			for (int i = 0; i < triggerCount; i++) {
-//				triggers [i].GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
-//				seconds = seconds + 1.9f;
-//				if (i == (triggerCount - 1)) {
-//					Invoke ("BackToOriginalPositionPink", seconds + 1);
-//				}
-//			}
-//		}
-//
-//		if (networkNum == "2") {
-//			origPos = blueGhost.transform.position;
-//			origRot = blueGhost.transform.eulerAngles;
-//			GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
-//			int triggerCount = triggers.Length;
-//			float seconds = 0;
-//			for (int i = 0; i < triggerCount; i++) {
-//				triggers [i].GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
-//				seconds = seconds + 1.9f;
-//				if (i == (triggerCount - 1)) {
-//					Invoke ("BackToOriginalPositionBlue", seconds + 1);
-//				}
-//			}
-//		}
-//
-//	}
 
 	void PlayCombinedIcons () {
 
@@ -1310,7 +1284,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		float seconds = 0;
 
 		for (int i = 0; i < triggers.Length; i++) {
-			seconds = seconds + actTime + 1.5f;
+			seconds = seconds + actTime + .25f;
 			scrollList.transform.GetChild(i).gameObject.GetComponent<TriggerScript> ().InvokeTriggerAction (seconds);
 			if (i == triggers.Length - 1) {
 			
@@ -1880,9 +1854,18 @@ public class TurnManagerScript : NetworkBehaviour {
 	}
 
 	void Hug () {
+		
 		blueScript.HugAnimation ();
 		pinkScript.HugAnimation ();
 		camerRot.EndGameRotion ();
+		Invoke ("CloseEyes", 2.0f);
+
+	}
+
+	void CloseEyes () {
+
+		blueScript.CloseEyesAnimation ();
+		pinkScript.CloseEyesAnimation ();
 	}
 
 	public void MoveTurnBar(float pointsTaken){

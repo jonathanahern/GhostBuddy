@@ -38,7 +38,7 @@ public class CameraRotation : MonoBehaviour {
 	void Update () {
 
 		if (Input.GetKeyDown (KeyCode.T)) {
-			SendStar ();
+			EndGameRotion ();
 		}
 
 		if (startLooking == true) {

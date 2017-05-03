@@ -56,7 +56,7 @@ public class GhostScript : MonoBehaviour {
 	void Update (){
 
 		if (Input.GetKeyDown(KeyCode.P)){
-			BlinkAnimation();
+			CloseEyesAnimation();
 		}
 	
 		if (Input.GetKeyDown(KeyCode.O)){
@@ -105,13 +105,18 @@ public class GhostScript : MonoBehaviour {
 
 	}
 
+	public void CloseEyesAnimation(){
+	
+		blinkAnimation.Play ("Close Eyes");
+	
+	}
+
 	public void HugAnimation(){
 
 		walk.GetComponent<Animator>().Play ("Hug");
+		CancelInvoke ();
 
 	}
-
-
 
 	public void WalkAnimation(){
 	
