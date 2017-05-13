@@ -20,7 +20,6 @@ public class RoomCreateJoin : MonoBehaviour {
 
 	public void CreateRoomButton (){
 
-		Debug.Log ("LEVEL UP");
 
 		if (levelName == "") {
 		

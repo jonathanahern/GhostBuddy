@@ -65,6 +65,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	public bool moveLeft;
 	private Vector2 nextTurnPos;
 	private float startBarPosX;
+	private Vector2 startPosBar;
 
 	public float iconsLeft = 7;
 	public float iconsToStart = 7;
@@ -75,6 +76,7 @@ public class TurnManagerScript : NetworkBehaviour {
 	public WheelPanelScript buttonPanel;
 	public WheelPanelScript wheelPanel;
 	public ColorButtonScript colorBut;
+	public RestartScript restartGame;
 
 	public GameObject scrollList;
 
@@ -194,6 +196,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		barRect = turnBar.GetComponent<RectTransform> ();
 		barRectEnd = turnBarEnd.GetComponent<RectTransform> ();
 		startBarPosX = barRect.anchoredPosition.x;
+		startPosBar = barRect.anchoredPosition;
 
 		iconList [0] = null;
 		iconList [1] = forwardIconBlue;
@@ -1303,10 +1306,15 @@ public class TurnManagerScript : NetworkBehaviour {
 			gearItems [i].GetComponent<WindmillScript> ().RotateWindmill ();
 		}
 
-		GameObject[] evilGhosts = GameObject.FindGameObjectsWithTag ("Slime");
-		for (int i = 0; i < evilGhosts.Length; i++) {
-			evilGhosts [i].GetComponent<SlimeScript> ().RotateSlime ();
+		GameObject[] boulders = GameObject.FindGameObjectsWithTag ("Boulder");
+		for (int i = 0; i < boulders.Length; i++) {
+			boulders [i].GetComponent<BoulderScript> ().RotateBoulder ();
 		}
+
+//		GameObject[] evilGhosts = GameObject.FindGameObjectsWithTag ("Slime");
+//		for (int i = 0; i < evilGhosts.Length; i++) {
+//			evilGhosts [i].GetComponent<SlimeScript> ().RotateSlime ();
+//		}
 
 
 	}
@@ -1327,8 +1335,6 @@ public class TurnManagerScript : NetworkBehaviour {
 		
 		}
 
-
-			
 		GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
 
 		waitScreen.SetActive (true);
@@ -1763,6 +1769,8 @@ public class TurnManagerScript : NetworkBehaviour {
 			if (pointsTotal > 99 && winning == false) {
 
 				loseScreen.SetActive (true);
+				restartGame.moveUp = true;
+
 
 			}
 
@@ -1858,7 +1866,7 @@ public class TurnManagerScript : NetworkBehaviour {
 		blueScript.HugAnimation ();
 		pinkScript.HugAnimation ();
 		camerRot.EndGameRotion ();
-		Invoke ("CloseEyes", 2.0f);
+		Invoke ("CloseEyes", 4.0f);
 
 	}
 
@@ -1918,20 +1926,24 @@ public class TurnManagerScript : NetworkBehaviour {
 	
 	}
 
-	void CheckStarHit () {
+	public void CheckStarHit () {
 		
 		if (goldHit == false) {
 			if (starGoldPoint < pointsTotal) {
 				starGold.gameObject.SetActive (false);
 				goldHit = true;
 			}
-		} else if (silverHit == false) {
+		} 
+
+		if (silverHit == false) {
 			if (starSilverPoint < pointsTotal) {
 				starSilver.gameObject.SetActive (false);
 				silverHit = true;
 			}
 
-		} else if (bronzeHit == false) {
+		} 
+
+		if (bronzeHit == false) {
 			if (starBronzePoint < pointsTotal) {
 				starBronze.gameObject.SetActive (false);
 				bronzeHit = true;
@@ -2189,6 +2201,47 @@ public class TurnManagerScript : NetworkBehaviour {
 		int toneNum = Random.Range (0, 4);
 		source.PlayOneShot (tones [toneNum], toneVol);
 
+	}
+
+	public void RestartGame(){
+
+		loseScreen.SetActive (false);
+		wheelPanel.MoveUp ();
+	
+		pointsTotal = 0;
+		barRect.anchoredPosition = startPosBar;
+		goldHit = false;
+		silverHit = false;
+		bronzeHit = false;
+		starGold.gameObject.SetActive (true);
+		starSilver.gameObject.SetActive (true);
+		starBronze.gameObject.SetActive (true);
+		PlaceStars ();
+
+		pinkGhost.GetComponent<Rigidbody> ().isKinematic = true;
+		pinkGhost.GetComponent<Rigidbody> ().useGravity = false;
+		blueGhost.GetComponent<Rigidbody> ().isKinematic = true;
+		blueGhost.GetComponent<Rigidbody> ().useGravity = false;
+
+		GameObject playerOneSpawn = GameObject.FindGameObjectWithTag ("Spawn One");
+		pinkGhost.transform.position = playerOneSpawn.transform.position;
+		pinkGhost.transform.rotation = playerOneSpawn.transform.rotation;
+		GameObject playerTwoSpawn = GameObject.FindGameObjectWithTag ("Spawn Two");
+		blueGhost.transform.position = playerTwoSpawn.transform.position;
+		blueGhost.transform.rotation = playerTwoSpawn.transform.rotation;
+
+		GameObject[] hiddenStuff = GameObject.FindGameObjectsWithTag ("New Wall");
+		foreach (GameObject hiddenStuffItem in hiddenStuff) {
+			hiddenStuffItem.GetComponent<HiddenWallScript> ().SwitchBackToHidden ();
+		}
+
+		GameObject[] hiddenBoulders = GameObject.FindGameObjectsWithTag ("Boulder");
+		foreach (GameObject hiddenBoulder in hiddenBoulders) {
+			hiddenBoulder.GetComponent<HiddenWallScript> ().SwitchBackToHidden ();
+		}
+
+		camerRot.CameraRotate (theirGhost);
+	
 	}
 
 }

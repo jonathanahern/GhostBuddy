@@ -20,6 +20,8 @@ public class ColorButtonScript : MonoBehaviour {
 	private Color white;
 	public Color grey;
 
+	public bool noWhite;
+
 	private Color[] colorList = new Color[99];
 
 	public TurnManagerScript turnManager;
@@ -81,13 +83,26 @@ public class ColorButtonScript : MonoBehaviour {
 			wedge [0] = 92;
 			return;
 		} else if (firstTab.color == purple) {
-			firstTab.color = white;
-			wedge [0] = 95;
-			return;
+			if (noWhite == true) {
+				firstTab.color = pink;
+				wedge [0] = 90;
+				return;
+			} else {
+				firstTab.color = white;
+				wedge [0] = 95;
+				return;
+			}
 		} else if (firstTab.color == grey) {
-			firstTab.color = white;
-			wedge [0] = 95;
-			return;
+
+			if (noWhite == true) {
+				firstTab.color = pink;
+				wedge [0] = 90;
+				return;
+			} else {
+				firstTab.color = white;
+				wedge [0] = 95;
+				return;
+			}
 		}
 
 	}
@@ -113,13 +128,25 @@ public class ColorButtonScript : MonoBehaviour {
 			wedge [1] = 92;
 			return;
 		} else if (secondTab.color == purple) {
-			secondTab.color = white;
-			wedge [1] = 95;
-			return;
+			if (noWhite == true) {
+				secondTab.color = pink;
+				wedge [1] = 90;
+				return;
+			} else {
+				secondTab.color = white;
+				wedge [1] = 95;
+				return;
+			}
 		} else if (secondTab.color == grey) {
-			secondTab.color = white;
-			wedge [1] = 95;
-			return;
+			if (noWhite == true) {
+				secondTab.color = pink;
+				wedge [1] = 90;
+				return;
+			} else {
+				secondTab.color = white;
+				wedge [1] = 95;
+				return;
+			}
 		}
 
 	}
@@ -145,13 +172,25 @@ public class ColorButtonScript : MonoBehaviour {
 			wedge [2] = 92;
 			return;
 		} else if (thirdTab.color == purple) {
-			thirdTab.color = white;
-			wedge [2] = 95;
-			return;
+			if (noWhite == true) {
+				thirdTab.color = pink;
+				wedge [2] = 90;
+				return;
+			} else {
+				thirdTab.color = white;
+				wedge [2] = 95;
+				return;
+			}
 		} else if (thirdTab.color == grey) {
-			thirdTab.color = white;
-			wedge [2] = 95;
-			return;
+			if (noWhite == true) {
+				thirdTab.color = pink;
+				wedge [2] = 90;
+				return;
+			} else {
+				thirdTab.color = white;
+				wedge [2] = 95;
+				return;
+			}
 		}
 
 	}

@@ -78,7 +78,6 @@ public class CameraRotation : MonoBehaviour {
 
 		gameObject.transform.DORotate (goalRotation, 2.0f).SetEase(Ease.OutCirc);
 
-
 //		float number = 3;
 //		DOTween.To (() => number, (c) => number = c, 5, 2).SetEase(Ease.InOutElastic).OnComplete(()=>{
 //			Debug.Log("Whatever");

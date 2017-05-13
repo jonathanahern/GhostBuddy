@@ -216,13 +216,90 @@ public class GhostScript : MonoBehaviour {
 
 		}
 
+		if (other.tag == "New Wall" && turnManager.winning == false) {
+
+			if (inWindMill == true)
+				return;
+
+			HitWallSound ();
+
+
+			if (gameObject.name == "Pink Ghost(Clone)") {
+
+				DOTween.Kill ("PinkForward", false);
+				StopAnimation ();
+				//turnManager.forwardPinkGhost = false;
+				turnManager.backPinkGhost = true;
+				turnManager.CorrectPink ();
+
+			}
+
+			if (gameObject.name == "Blue Ghost(Clone)") {
+
+				DOTween.Kill ("BlueForward", false);
+				StopAnimation ();
+				//turnManager.forwardBlueGhost = false;
+				turnManager.backBlueGhost = true;
+				turnManager.CorrectBlue ();
+
+			}
+
+			if (turnManager.preview == true) {
+
+				GameObject[] triggers = GameObject.FindGameObjectsWithTag ("Trigger");
+				int triggerCount = triggers.Length;
+				triggers [triggerCount - 1].GetComponent<TriggerScript> ().hitWall = true;
+				turnManager.DeletePoint ();
+
+			} else {
+
+				turnManager.MoveTurnBar (5.0f);
+				turnManager.TakeHit (5.0f);
+
+			}
+
+		}
+
 		if (other.tag == "Hidden Wall" && turnManager.preview == false && turnManager.winning == false) {
 
 			if (inWindMill == true) {
 				return;
 			}
 
-			Debug.Log ("Hit hidden wall" + inWindMill + gameObject.name);
+			//Debug.Log ("Hit hidden wall" + inWindMill + gameObject.name);
+
+			if (gameObject.name == "Pink Ghost(Clone)") {
+
+				DOTween.Kill ("PinkForward", false);
+				StopAnimation ();
+				//turnManager.forwardPinkGhost = false;
+				turnManager.backPinkGhost = true;
+				turnManager.CorrectPink ();
+
+			}
+
+			if (gameObject.name == "Blue Ghost(Clone)") {
+
+				DOTween.Kill ("BlueForward", false);
+				StopAnimation ();
+				//turnManager.forwardBlueGhost = false;
+				turnManager.backBlueGhost = true;
+				turnManager.CorrectBlue ();
+
+			}
+
+			HitWallSound ();
+			turnManager.MoveTurnBar (5.0f);
+			turnManager.TakeHit (5.0f);
+			other.GetComponent<HiddenWallScript> ().SwitchMat ();
+
+		}
+
+		if (other.tag == "Boulder" && turnManager.preview == false && turnManager.winning == false) {
+
+			if (inWindMill == true) {
+				return;
+			}
 
 			if (gameObject.name == "Pink Ghost(Clone)") {
 
@@ -253,7 +330,9 @@ public class GhostScript : MonoBehaviour {
 
 		if (other.tag == "Border" && turnManager.preview == false && turnManager.winning == false) {
 
-			//Debug.Log ("Loser");
+			turnManager.pointsTotal = 90.0f;
+			turnManager.MoveTurnBar (90.0f);
+			turnManager.CheckStarHit ();
 
 			if (gameObject.name == "Pink Ghost(Clone)") {
 				turnManager.gameLost = true;
